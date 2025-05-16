@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 4%; /* Casi negro con un toque de azul para suavizar la intensidad */
+    --foreground: 240 15% 85%; /* Gris claro azulado para una lectura cómoda y profesional */
+
+    --card: 240 12% 6%; /* Fondo de tarjetas ligeramente elevado */
+    --card-foreground: 240 15% 80%; /* Texto sutil pero legible */
+
+    --popover: 240 12% 6%; /* Fondo de popovers igual al de las tarjetas */
+    --popover-foreground: 240 15% 80%; /* Texto de popovers igual al de las tarjetas */
+
+    --primary: 180 100% 50%; /* Azul profesional vibrante para elementos interactivos */
+    --primary-foreground: 0 0% 100%; /* Blanco puro para alto contraste */
+
+    --secondary: 240 20% 14%; /* Azul grisáceo oscuro para elementos secundarios */
+    --secondary-foreground: 240 15% 75%; /* Gris azulado suave */
+
+    --muted: 240 15% 10%; /* Un fondo oscuro ligeramente diferenciado para elementos sutiles */
+    --muted-foreground: 240 10% 60%; /* Gris medio para texto secundario o deshabilitado */
+
+    --accent: 180 90% 40%; /* Verde azulado (cian) para elementos destacados, sutil pero elegante */
+    --accent-foreground: 0 0% 100%; /* Texto claro sobre acentos para legibilidad */
+
+    --destructive: 0 75% 40%; /* Rojo oscuro y profesional, no agresivo */
+    --destructive-foreground: 0 0% 100%; /* Texto claro sobre destructivo */
+
+    --border: 240 15% 12%; /* Bordes oscuros sutiles pero visibles */
+    --input: 240 15% 14%; /* Inputs con tono oscuro elegante, diferenciado del fondo de tarjeta */
+    --ring: 180 100% 50%; /* Azul vibrante (igual al primario) para efectos de foco */
+
+    --radius: 0.5rem;
+    --radius-sm: calc(var(--radius) - 2px);
+    --radius-md: var(--radius); /* Assuming md is the base radius */
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* Sidebar specific colors - these might need adjustment if the new theme is very dark */
+    --sidebar-background: 240 10% 6%; /* Slightly lighter than main dark background or distinct */
+    --sidebar-foreground: 240 15% 70%; /* Softer foreground for sidebar */
+    --sidebar-primary: 220 90% 55%; /* Primary for sidebar, can be slightly brighter */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 180 90% 45%; /* Accent for sidebar, can be slightly brighter */
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 15% 10%; /* Border for sidebar elements */
+    --sidebar-ring: 220 90% 55%;
+
+    /* Complexity Evaluation Colors - these are semantic and should work on dark, but check contrast */
+    --complexity-low: 134 61% 41%; /* Green */
+    --complexity-medium: 45 93% 47%; /* Yellow */
+    --complexity-high: 0 72% 51%; /* Red */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-montserrat), sans-serif; /* Updated to Montserrat */
+  }
+  code,
+  pre {
+    font-family: monospace, sans-serif; /* Updated to generic monospace */
+  }
+}
+
+button[disabled] {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Enhanced prose styles for react-markdown */
+@layer components {
+  .markdown-content {
+    /* Applies the Tailwind Typography base styles */
+    @apply prose prose-sm dark:prose-invert max-w-none;
+  }
+
+  /* Specific overrides or additions if prose defaults are not sufficient */
+  .markdown-content h1,
+  .markdown-content h2,
+  .markdown-content h3,
+  .markdown-content h4,
+  .markdown-content h5,
+  .markdown-content h6 {
+    /* Example: Ensure headings use the main foreground color if not already */
+    /* color: hsl(var(--foreground)); Already handled by prose-invert variables */
+  }
+
+  .markdown-content p {
+    @apply my-3 leading-relaxed; /* Standardize paragraph margins and line height */
+  }
+
+  .markdown-content ul,
+  .markdown-content ol {
+    @apply my-3 pl-5;
+  }
+  .markdown-content ul > li,
+  .markdown-content ol > li {
+    @apply my-1;
+  }
+
+  .markdown-content blockquote {
+    @apply my-4 px-4 py-2 border-l-4 border-accent bg-muted/30 text-muted-foreground italic;
+    quotes: none; /* Remove default browser quotes if any */
+  }
+  .markdown-content blockquote p {
+    @apply my-2; /* Adjust paragraph margin within blockquote */
+  }
+
+  .markdown-content strong {
+    /* color: hsl(var(--foreground)); Handled by prose */
+  }
+
+  .markdown-content em {
+    /* color: hsl(var(--foreground)); Handled by prose */
+  }
+
+  .markdown-content a {
+    /* color: hsl(var(--primary)); Handled by prose */
+    /* text-decoration: none; Handled by prose */
+    /* @apply hover:underline; Handled by prose */
+  }
+
+  /* Ensure inline code and code blocks have distinct styling and use monospace font */
+  .markdown-content code:not(pre > code) {
+    /* Target inline code */
+    /* Handled by prose config: --tw-prose-code and --tw-prose-invert-code */
+    /* Ensure font family is monospace if not already set by prose */
+    font-family: monospace, sans-serif; /* Updated to generic monospace */
+  }
+
+  .markdown-content pre {
+    /* Handled by prose config: --tw-prose-pre-bg and --tw-prose-invert-pre-bg */
+    @apply shadow-md overflow-x-auto my-4;
+  }
+
+  .markdown-content pre code {
+    /* Handled by prose config: --tw-prose-pre-code and --tw-prose-invert-pre-code */
+    font-family: monospace, sans-serif; /* Updated to generic monospace */
+  }
+
+  .markdown-content table {
+    @apply my-4 w-full;
+    /* border-collapse: collapse; Handled by prose */
+  }
+  .markdown-content th,
+  .markdown-content td {
+    /* border: 1px solid hsl(var(--border)); Handled by prose */
+    /* padding: 0.5rem 0.75rem; Handled by prose */
+    /* text-align: left; Handled by prose */
+  }
+  .markdown-content th {
+    /* background-color: hsl(var(--muted)); Handled by prose if desired */
+    /* font-weight: 600; Handled by prose */
+  }
+  .markdown-content hr {
+    @apply my-6;
+    /* border-top: 1px solid hsl(var(--border)); Handled by prose */
+  }
+}
