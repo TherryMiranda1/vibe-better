@@ -3,7 +3,6 @@
 import type { FormEvent } from "react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react";
 import {
   promptEngineeringModes,
   type PromptEngineeringMode,
@@ -44,12 +43,7 @@ import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { getUserCredits } from "@/lib/services/client/userCredits.service";
 import useUserStore from "@/context/store";
-import dynamic from "next/dynamic";
-
-const DynamicAnalysisSection = dynamic(
-  () => import("@/components/analysis-section"),
-  { ssr: false }
-);
+import AnalysisSection from "@/components/analysis-section";
 
 function getInitialAnalysisState(): AnalysisSections {
   const initialState = {} as Partial<AnalysisSections>;
@@ -71,7 +65,7 @@ const mandatoryKeys: Set<AnalysisSectionKey> = new Set([
 ]);
 const MAX_HISTORY_ENTRIES = 10;
 
-export const Analysis = () => {
+const Analysis = () => {
   const updateUserCredits = useUserStore((state) => state.updateUserCredits);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -118,17 +112,17 @@ export const Analysis = () => {
 
   // Recuperar el prompt de la URL al cargar el componente
   useEffect(() => {
-    const savedPrompt = searchParams.get('prompt');
+    const savedPrompt = searchParams.get("prompt");
     if (savedPrompt) {
       try {
         const decodedPrompt = decodeURIComponent(savedPrompt);
         setPromptText(decodedPrompt);
         // Limpiar la URL después de recuperar el prompt
         const url = new URL(window.location.href);
-        url.searchParams.delete('prompt');
+        url.searchParams.delete("prompt");
         router.replace(url.pathname + url.search);
       } catch (error) {
-        console.error('Error al decodificar el prompt de la URL:', error);
+        console.error("Error al decodificar el prompt de la URL:", error);
       }
     }
   }, [searchParams, router]);
@@ -593,9 +587,13 @@ export const Analysis = () => {
                 </button>
               </SignedIn>
               <SignedOut>
-                <SignInButton 
-                  mode="modal" 
-                  fallbackRedirectUrl={promptText.trim() ? `/?prompt=${encodeURIComponent(promptText)}` : '/'}
+                <SignInButton
+                  mode="modal"
+                  fallbackRedirectUrl={
+                    promptText.trim()
+                      ? `/?prompt=${encodeURIComponent(promptText)}`
+                      : "/"
+                  }
                 >
                   <button
                     onClick={(e) => e.preventDefault()}
@@ -619,7 +617,7 @@ export const Analysis = () => {
                 const section = analysisResults[key];
                 if (!section || !activeAnalyses.has(key)) return null;
                 return (
-                  <DynamicAnalysisSection
+                  <AnalysisSection
                     key={key}
                     itemKey={key}
                     title={section.title}
@@ -652,3 +650,5 @@ export const Analysis = () => {
     </div>
   );
 };
+
+export default Analysis;

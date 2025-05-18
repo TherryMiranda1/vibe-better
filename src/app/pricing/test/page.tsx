@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import PricingSection from "../components/PricingSection";
+import PricingSection from "../../../components/components/PricingSection";
 import { ProductWithPrice } from "@/lib/services/server/db/getProducts.service";
 
 export const metadata: Metadata = {

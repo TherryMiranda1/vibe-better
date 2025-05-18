@@ -9,19 +9,16 @@ import {
   AlertTriangle,
   Clock,
   DollarSign,
-  Wand2,
   CheckCircle2,
   Lightbulb,
   FilePenLine,
   BarChart2,
   ShieldCheck,
   Rocket,
-  ListChecks,
   BookOpen,
   Settings2,
   History,
   Users,
-  ArrowRight,
   Brain,
   Gauge,
   Share2,
@@ -31,10 +28,14 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { HeroBanner } from "@/features/landing/hero-banner";
-import { Analysis } from "@/features/analysis/Analysis";
 import { HoverSurface } from "@/features/landing/hover-surface";
 import { FeaturedPrompts } from "@/components/featured-prompts";
 import TechniqueComparison from "@/components/technique-comparison";
+import dynamic from "next/dynamic";
+
+const DynamicAnalysis = dynamic(() => import("@/features/analysis/Analysis"), {
+  ssr: false,
+});
 
 const FeatureCard: React.FC<{
   icon: React.ReactNode;
@@ -68,7 +69,7 @@ export default function LandingPage() {
       {/* Hero Section - Replaced with HeroBanner component */}
       <HoverSurface>
         <HeroBanner>
-          <Analysis />
+          <DynamicAnalysis />
         </HeroBanner>
       </HoverSurface>
 

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getActiveProductsWithPrices } from "@/lib/services/server/db/getProducts.service";
-import PricingSection from "./components/PricingSection";
+import PricingSection from "../../components/components/PricingSection";
 
 export const metadata: Metadata = {
   title: "Precios | Vibe Code Better",
