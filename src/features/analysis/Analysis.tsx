@@ -460,7 +460,7 @@ const Analysis = () => {
 
   return (
     <div className="flex z-20 flex-col max-w-2xl w-full items-center mx-auto text-left">
-      <Card className="w-full rounded-xl bg-background shadow-2xl relative backdrop-blur-sm mb-4 p-2 flex flex-col gap-4">
+      <Card className="w-full rounded-xl bg-background shadow-2xl relative border-primary/50 backdrop-blur-sm mb-4 p-4 flex flex-col gap-4">
         <header className="flex justify-between items-center">
           <h3 className="text-md font-bold">
             Ingresa tu prompt de código y lo optimizaremos por ti.
@@ -528,7 +528,7 @@ const Analysis = () => {
                 value={promptText}
                 rows={6}
                 onChange={(e) => setPromptText(e.target.value)}
-                className="p-4 rounded-xl shadow-inner bg-card text-foreground placeholder:text-muted-foreground"
+                className="p-4 rounded-xl shadow-inner focus:ring-primary/50 focus:ring-2 bg-card text-foreground placeholder:text-muted-foreground"
                 disabled={isAnalyzing}
                 maxLength={10000}
               />

@@ -26,7 +26,7 @@ export function HeroBanner({
   tagline = "",
   titlePrefix = "Ahorra cientos de",
   animatedWords = defaultAnimatedWords,
-  descriptionText = "Captura ideas claras, impulsa tu productividad y genera código impecable con IA sin rodeos.",
+  descriptionText = "Genera código impecable con IA en segundos. Captura ideas claras, impulsa tu productividad mejorando la calidad de tus prompts.",
   children,
 }: HeroBannerProps) {
   const [wordIndex, setWordIndex] = useState(0);
@@ -91,7 +91,7 @@ export function HeroBanner({
           {tagline}
         </div>
       )}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 mt-12">
         {titlePrefix}{" "}
         <span className="inline-block text-primary min-w-[180px] sm:min-w-[250px] md:min-w-[320px] text-left">
           {currentText}

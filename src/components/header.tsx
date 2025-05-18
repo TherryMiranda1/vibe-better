@@ -25,13 +25,14 @@ export function AppHeader() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navigationLinks = [
-    { href: "/glossary", label: "Tags" },
     { href: "/prompts", label: "Prompts" },
-    { href: "/packs", label: "Packs" },
+    { href: "/glossary", label: "Tags" },
+    { href: "/pricing", label: "Precios" },
+    { href: "/organizations", label: "Organizaciones" },
   ];
 
   return (
-    <header className="px-4 sticky top-4 z-50">
+    <header className="px-4 sticky top-4 z-20">
       {/* Modal de confirmación de compra exitosa */}
       <DynamicCheckoutSuccessModal />
 

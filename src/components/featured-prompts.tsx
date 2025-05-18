@@ -90,7 +90,7 @@ export function FeaturedPrompts() {
 
         <div className="flex justify-center mt-10">
           <Link href="/prompts">
-            <Button className="group">
+            <Button className="group text-background">
               Ver todos los prompts
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
