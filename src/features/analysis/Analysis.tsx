@@ -580,7 +580,7 @@ const Analysis = () => {
               <SignedIn>
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                  className="flex items-center bg-white  justify-center gap-2 text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                   disabled={isAnalyzing || !promptText.trim()}
                 >
                   {isAnalyzing ? "Mejorando tu prompt..." : "Optimizar"} <Zap />
@@ -597,7 +597,7 @@ const Analysis = () => {
                 >
                   <button
                     onClick={(e) => e.preventDefault()}
-                    className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                    className="flex items-center justify-center gap-2 bg-white text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                   >
                     Optimizar <Zap />
                   </button>

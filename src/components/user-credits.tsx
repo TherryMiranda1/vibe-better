@@ -32,7 +32,13 @@ export function UserCredits() {
     fetchCredits();
   }, [user, isLoaded]);
 
-  if (!isLoaded || !user || isLoading) {
+  if (!isLoaded || isLoading) {
+    return (
+      <div className="w-12 h-6 rounded-md border animate-pulse bg-primary/5" />
+    );
+  }
+
+  if (!user) {
     return null;
   }
 

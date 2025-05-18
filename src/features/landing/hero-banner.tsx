@@ -26,7 +26,7 @@ export function HeroBanner({
   tagline = "",
   titlePrefix = "Ahorra cientos de",
   animatedWords = defaultAnimatedWords,
-  descriptionText = "Genera código impecable con IA en segundos. Captura ideas claras, impulsa tu productividad mejorando la calidad de tus prompts.",
+  descriptionText = "Mejora la calidad de tus prompts. Genera código impecable con IA en segundos. Captura ideas claras, impulsa tu productividad.",
   children,
 }: HeroBannerProps) {
   const [wordIndex, setWordIndex] = useState(0);

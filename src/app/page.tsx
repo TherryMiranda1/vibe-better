@@ -32,7 +32,6 @@ import { HoverSurface } from "@/features/landing/hover-surface";
 import { FeaturedPrompts } from "@/components/featured-prompts";
 import TechniqueComparison from "@/components/technique-comparison";
 import dynamic from "next/dynamic";
-import { PricingTable } from "@clerk/nextjs";
 
 const DynamicAnalysis = dynamic(() => import("@/features/analysis/Analysis"), {
   ssr: false,
@@ -115,22 +114,6 @@ export default function LandingPage() {
               </p>
             </Card>
           </div>
-        </div>
-      </section>
-      <section className="py-16 px-4 bg-card/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 z-1">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
-              Planes para organizaciones
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Elige el paquete de créditos que mejor se adapte a tus necesidades
-              para optimizar tus prompts y obtener resultados excepcionales.
-              Invita a tantos miembros como quieras de tu organizacion como
-              quieras.
-            </p>
-          </div>
-          <PricingTable forOrganizations />
         </div>
       </section>
 
