@@ -34,6 +34,7 @@ import { HeroBanner } from "@/features/landing/hero-banner";
 import { Analysis } from "@/features/analysis/Analysis";
 import { HoverSurface } from "@/features/landing/hover-surface";
 import { FeaturedPrompts } from "@/components/featured-prompts";
+import TechniqueComparison from "@/components/technique-comparison";
 
 const FeatureCard: React.FC<{
   icon: React.ReactNode;
@@ -76,7 +77,7 @@ export default function LandingPage() {
         id="problema"
         className="py-16 md:py-24 bg-gradient-to-br from-black/80 to-card"
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-4">
             ¿Tu Interacción con IA para Código Podría Mejorar?
           </h2>
@@ -117,7 +118,7 @@ export default function LandingPage() {
 
       {/* Nuestra Solución Section */}
       <section className="py-16 md:py-24 bg-card/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">
               Nuestra Solución:{" "}
@@ -155,7 +156,7 @@ export default function LandingPage() {
 
       {/* Beneficios Clave Section */}
       <section className="py-16 md:py-24 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
             <div>
               <h2 className="text-4xl font-bold mb-4">
@@ -199,8 +200,8 @@ export default function LandingPage() {
       </section>
 
       {/* Cómo Funciona Section */}
-      <section id="como-funciona" className="py-16 md:py-24 bg-card/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="como-funciona" className=" py-16 md:py-24 bg-card/50">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-12">
             Simple, Rápido y Efectivo
           </h2>
@@ -264,9 +265,11 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      {/* Technique Comparison Section */}
+      <TechniqueComparison />
 
       {/* Características Destacadas Section */}
-      <section className="py-16 md:py-24 bg-background">
+      <section className="max-w-7xl mx-auto py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-12">
             Características Destacadas
@@ -310,7 +313,7 @@ export default function LandingPage() {
       <FeaturedPrompts />
 
       {/* Testimonios Section */}
-      <section className="py-16 md:py-24 bg-background">
+      <section className="max-w-7xl mx-auto py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-center mb-12 text-primary">
             Lo que Dicen Nuestros Usuarios
@@ -347,7 +350,7 @@ export default function LandingPage() {
       </section>
 
       {/* Llamada a la Acción Section */}
-      <section className="py-20 md:py-32 bg-background">
+      <section className="max-w-7xl mx-auto py-20 md:py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl sm:text-5xl font-bold mb-6">
             Convierte tus Prompts en tu Mejor Herramienta de Desarrollo
@@ -369,7 +372,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="py-8 border-t border-border text-center bg-card">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Vibe Code Better. Todos los
             derechos reservados.

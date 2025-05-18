@@ -79,30 +79,30 @@ export default function PricingCard({ product, price }: PricingCardProps) {
 
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border ${
-        isFeatured ? "border-indigo-600 shadow-indigo-100" : "border-gray-200"
+      className={`relative flex flex-col rounded-2xl border border-primary ${
+        isFeatured ? "border-primary shadow-primary" : "border-foreground/40"
       } shadow-lg overflow-hidden transition-all duration-200 hover:shadow-xl ${
         isFeatured ? "transform hover:-translate-y-1" : ""
       }`}
     >
       {/* Featured badge */}
       {isFeatured && (
-        <div className="absolute top-0 right-0 bg-indigo-600 text-white px-4 py-1 rounded-bl-lg text-sm font-medium flex items-center">
+        <div className="absolute top-0 right-0 bg-primary text-black px-4 py-1 rounded-bl-lg text-sm font-medium flex items-center">
           <Sparkles className="h-4 w-4 mr-1" />
           Recomendado
         </div>
       )}
 
-      <div className={`p-6 ${isFeatured ? "bg-indigo-50" : "bg-white"}`}>
-        <h3 className="text-xl font-bold text-gray-900">{product.name}</h3>
-        <p className="mt-2 text-gray-500">{product.description}</p>
+      <div className={`px-6 py-10 ${isFeatured ? "bg-primary/10" : "bg-card"}`}>
+        <h3 className="text-md font-bold text-primary">{product.name}</h3>
+        <p className="mt-2 text-muted-foreground">{product.description}</p>
 
-        <div className="mt-4">
-          <span className="text-4xl font-bold text-gray-900">
+        <div className="">
+          <span className="text-4xl font-bold text-foreground">
             {formattedPrice}
           </span>
           {price.interval && (
-            <span className="text-gray-500 ml-2">
+            <span className="text-muted-foreground ml-2">
               /{price.interval}
               {price.interval_count && price.interval_count > 1
                 ? ` (${price.interval_count} meses)`
@@ -112,32 +112,32 @@ export default function PricingCard({ product, price }: PricingCardProps) {
         </div>
 
         <div className="mt-6">
-          <div className="flex items-center">
-            <span className="text-3xl font-bold text-indigo-600">
+          <div className="flex items-center text-primary">
+            <span className="text-3xl font-bold text-foreground">
               {credits}
             </span>
-            <span className="ml-2 text-gray-600">créditos</span>
+            <span className="ml-2 text-muted-foreground">créditos</span>
           </div>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             {price.description || "Para analizar y optimizar tus prompts"}
           </p>
         </div>
       </div>
 
-      <div className="border-t border-gray-200 p-6">
+      <div className="border-t border-foreground/10 p-6">
         <button
           onClick={handlePurchase}
           disabled={isLoading}
-          className={`w-full flex items-center justify-center py-3 px-4 rounded-lg text-white font-medium ${
+          className={`w-full flex items-center justify-center py-3 px-4 rounded-lg border border-primary font-medium ${
             isFeatured
-              ? "bg-indigo-600 hover:bg-indigo-700"
-              : "bg-gray-800 hover:bg-gray-900"
+              ? "bg-primary hover:bg-primary/80 text-black"
+              : "bg-card hover:bg-card/80"
           } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-            isFeatured ? "focus:ring-indigo-500" : "focus:ring-gray-500"
+            isFeatured ? "focus:ring-primary" : "focus:ring-foreground"
           } transition-colors duration-200`}
         >
           {isLoading ? (
-            <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="h-5 w-5 border-2 border-foreground border-t-transparent rounded-full animate-spin"></div>
           ) : (
             <>
               Comprar ahora

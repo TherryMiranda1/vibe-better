@@ -5,7 +5,6 @@ import { Check } from "lucide-react";
 import { ProductWithPrice } from "@/lib/services/server/db/getProducts.service";
 import PricingCard from "./PricingCard";
 
-
 interface PricingSectionProps {
   products: ProductWithPrice[];
 }
@@ -26,15 +25,15 @@ export default function PricingSection({ products }: PricingSectionProps) {
       {products.some((product) =>
         product.prices.some((price) => price.interval)
       ) && (
-        <div className="flex justify-center">
-          <div className="relative self-center rounded-lg bg-gray-100 p-1 flex">
+        <div className="flex justify-center w-full items-center">
+          <div className="relative self-center rounded-lg bg-card p-1 flex">
             <button
               onClick={() => setBillingInterval("month")}
               className={`${
                 billingInterval === "month"
-                  ? "bg-white border-gray-200 shadow-sm text-gray-900"
-                  : "text-gray-500"
-              } relative w-28 rounded-md py-2 text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:z-10 sm:w-auto sm:px-8`}
+                  ? "bg-white border shadow-sm text-foreground"
+                  : "text-foreground"
+              } relative w-28 rounded-md py-2 text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-1 focus:z-10 sm:w-auto sm:px-8`}
             >
               Mensual
             </button>
@@ -42,9 +41,9 @@ export default function PricingSection({ products }: PricingSectionProps) {
               onClick={() => setBillingInterval("year")}
               className={`${
                 billingInterval === "year"
-                  ? "bg-white border-gray-200 shadow-sm text-gray-900"
-                  : "text-gray-500"
-              } relative w-28 rounded-md py-2 text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:z-10 sm:w-auto sm:px-8`}
+                  ? "bg-card border shadow-sm text-foreground"
+                  : "text-foreground"
+              } relative w-28 rounded-md py-2 text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-1 focus:z-10 sm:w-auto sm:px-8`}
             >
               Anual
             </button>
@@ -53,7 +52,7 @@ export default function PricingSection({ products }: PricingSectionProps) {
       )}
 
       {/* Credit packages */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="flex flex-wrap justify-center gap-6 mx-auto">
         {creditPackages.map((product) => {
           // Find the appropriate price based on the billing interval
           const price =
@@ -72,12 +71,12 @@ export default function PricingSection({ products }: PricingSectionProps) {
       </div>
 
       {/* Features comparison */}
-      <div className="mt-16 bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="mt-16 bg-card rounded-lg shadow-lg overflow-hidden">
         <div className="px-6 py-8">
-          <h2 className="text-2xl font-bold text-center text-gray-900">
+          <h2 className="text-2xl font-bold text-center text-foreground">
             Todas las características incluidas
           </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-center text-gray-500">
+          <p className="mt-4 max-w-2xl mx-auto text-center text-muted-foreground">
             Todos nuestros paquetes de créditos incluyen acceso completo a todas
             las funcionalidades de la plataforma.
           </p>
@@ -89,13 +88,12 @@ export default function PricingSection({ products }: PricingSectionProps) {
               "Biblioteca de ejemplos de prompts efectivos",
               "Historial de prompts analizados",
               "Exportación de resultados",
-              "Soporte prioritario",
             ].map((feature) => (
               <div key={feature} className="flex items-start">
                 <div className="flex-shrink-0">
-                  <Check className="h-6 w-6 text-green-500" />
+                  <Check className="h-6 w-6 text-primary" />
                 </div>
-                <p className="ml-3 text-base text-gray-700">{feature}</p>
+                <p className="ml-3 text-base text-foreground">{feature}</p>
               </div>
             ))}
           </div>

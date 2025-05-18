@@ -5,6 +5,7 @@ import {
   LOADING_EVENT_VALUE,
 } from "@/config/analysis-config";
 import type { AnalysisSectionKey, AnalysisUpdateEvent } from "@/types/analysis";
+import type { PromptEngineeringMode } from "@/types/prompt-engineering";
 import { evaluateComplexity } from "@/ai/flows/evaluate-complexity-flow";
 import { generateSuggestedPromptWithLinkedTags } from "@/ai/flows/generate-suggested-prompt-flow";
 import { scorePrompt } from "@/ai/flows/score-prompt";
@@ -19,11 +20,22 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const userPrompt = searchParams.get("prompt");
   const analysesParam = searchParams.get("analyses");
+  const promptModeParam = searchParams.get(
+    "promptMode"
+  ) as PromptEngineeringMode | null;
   const operationCost = 1;
 
   if (!userPrompt) {
     logger.error("Prompt is required");
     return new Response(JSON.stringify({ error: "Prompt is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (userPrompt.length > 10000) {
+    logger.error("Prompt is too long");
+    return new Response(JSON.stringify({ error: "Prompt is too long" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
@@ -104,6 +116,7 @@ export async function GET(request: NextRequest) {
                   const suggestedPromptResult =
                     await generateSuggestedPromptWithLinkedTags({
                       originalPrompt: userPrompt,
+                      promptMode: promptModeParam || "zero-shot",
                     });
                   payloadString = JSON.stringify(suggestedPromptResult);
                 } else if (key === "score") {

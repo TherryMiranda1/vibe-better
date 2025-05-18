@@ -18,9 +18,28 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { technicalTags } from '@/config/technical-tags'; // Importar el glosario
 import type { TokenUsage } from '@/types/analysis';
+import type { PromptEngineeringMode } from '@/types/prompt-engineering';
 
 const GenerateSuggestedPromptInputSchema = z.object({
   originalPrompt: z.string().describe('El prompt original a mejorar.'),
+  promptMode: z.enum(['chain-of-thought', 'few-shot', 'retrieval-augmented', 'zero-shot', 'self-consistency', 'tree-of-thoughts', 'auto-prompting']).describe('El modo de prompt engineering a aplicar.').default('zero-shot'),
+});
+
+// Esquema interno para la plantilla del prompt, incluyendo flags de modo y technicalTags
+const InternalPromptInputSchema = GenerateSuggestedPromptInputSchema.extend({
+  isChainOfThoughtMode: z.boolean(),
+  isFewShotMode: z.boolean(),
+  isRetrievalAugmentedMode: z.boolean(),
+  isZeroShotMode: z.boolean(),
+  isSelfConsistencyMode: z.boolean(),
+  isTreeOfThoughtsMode: z.boolean(),
+  isAutoPromptingMode: z.boolean(),
+  technicalTags: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    category: z.string(),
+  })),
 });
 export type GenerateSuggestedPromptInput = z.infer<typeof GenerateSuggestedPromptInputSchema>;
 
@@ -57,9 +76,46 @@ const glossaryForPrompt = technicalTags.map(tag => ({
 
 const generateSuggestedPromptGenkitPrompt = ai.definePrompt({
   name: 'generateSuggestedPromptWithLinkedTagsPrompt',
-  input: {schema: GenerateSuggestedPromptInputSchema},
+  input: {schema: InternalPromptInputSchema}, // Usar el esquema interno
   output: {schema: GenerateSuggestedPromptLLMOutputSchema}, // LLM generates this
   prompt: `Eres ingeniero de prompts, experto en refinar prompts para tareas relacionadas con la codificación. Eres detallista y analisas detenidamente con el objetivo de mejorar el prompt original del usuario para que sea significativamente más efectivo para un asistente de codificación de IA. Generarás DOS versiones del prompt mejorado, ambas en ESPAÑOL: un "Prompt Sugerido Conciso" y un "Prompt Sugerido Elaborado".
+
+Modo de Prompt Engineering seleccionado: {{promptMode}}
+
+{{#if isChainOfThoughtMode}}
+# Instrucciones específicas para Chain-of-Thought (CoT)
+Aplica la técnica de Chain-of-Thought (CoT) en ambas versiones del prompt. Esto significa que debes inducir al modelo a exponer paso a paso su razonamiento antes de dar una respuesta final. Incluye frases como "Pensemos paso a paso" o "Analicemos esto por etapas" para guiar al modelo a través de un proceso de razonamiento explícito.
+{{/if}}
+
+{{#if isFewShotMode}}
+# Instrucciones específicas para Few-Shot Prompting
+Aplica la técnica de Few-Shot Prompting en ambas versiones del prompt. Esto implica proporcionar varios ejemplos ("shots") de input-output dentro del prompt para que el modelo aprenda el formato, estilo y lógica de la tarea. Incluye 2-3 ejemplos concretos que muestren el tipo de respuesta esperada.
+{{/if}}
+
+{{#if isRetrievalAugmentedMode}}
+# Instrucciones específicas para Retrieval-Augmented Generation (RAG)
+Aplica la técnica de Retrieval-Augmented Generation (RAG) en ambas versiones del prompt. Esto implica incorporar fragmentos relevantes de conocimiento (como documentación, especificaciones o mejores prácticas) directamente en el prompt para proporcionar contexto adicional y mejorar la precisión de la respuesta.
+{{/if}}
+
+{{#if isZeroShotMode}}
+# Instrucciones específicas para Zero-Shot Prompting
+Aplica la técnica de Zero-Shot Prompting en ambas versiones del prompt. Esto significa crear instrucciones claras y directas sin ejemplos previos, confiando en la capacidad del modelo para comprender y ejecutar la tarea basándose únicamente en la instrucción proporcionada.
+{{/if}}
+
+{{#if isSelfConsistencyMode}}
+# Instrucciones específicas para Self-Consistency Prompting
+Aplica la técnica de Self-Consistency Prompting en ambas versiones del prompt. Esto implica generar múltiples cadenas de razonamiento (vías de pensamiento) y seleccionar la respuesta más consistente. Incluye instrucciones para que el modelo considere diferentes enfoques para resolver el problema y luego converja en la solución más robusta.
+{{/if}}
+
+{{#if isTreeOfThoughtsMode}}
+# Instrucciones específicas para Tree-of-Thoughts (ToT)
+Aplica la técnica de Tree-of-Thoughts (ToT) en ambas versiones del prompt. Esto implica estructurar el razonamiento como un árbol donde en cada nodo se generan varias "ideas" (pensamientos), se evalúan y se exploran las ramas más prometedoras. Incluye instrucciones para que el modelo considere múltiples caminos de solución, evalúe cada uno y seleccione el más adecuado.
+{{/if}}
+
+{{#if isAutoPromptingMode}}
+# Instrucciones específicas para Auto-Prompting
+Aplica la técnica de Auto-Prompting en ambas versiones del prompt. Esto implica generar y evaluar automáticamente múltiples versiones de prompts optimizados para la tarea. Incluye instrucciones para que el modelo reformule el prompt original de diferentes maneras y seleccione la versión que probablemente produzca los mejores resultados.
+{{/if}}
 Tu salida DEBE ser un objeto JSON que se adhiera al esquema de salida definido (conciseSuggestedPrompt, elaboratedSuggestedPrompt). NO incluyas el campo 'usage' en tu respuesta JSON.
 
 Aquí tienes un glosario de atributos técnicos de calidad. Revísalos cuidadosamente.
@@ -111,11 +167,20 @@ const generateSuggestedPromptFlow = ai.defineFlow(
     outputSchema: GenerateSuggestedPromptLLMOutputSchema, // LLM generates this
   },
   async (input: GenerateSuggestedPromptInput): Promise<GenerateSuggestedPromptOutput> => {
-    const { output, usage } = await generateSuggestedPromptGenkitPrompt({
+    const promptInternalInput = {
       originalPrompt: input.originalPrompt,
-      // @ts-ignore - Passing extra context for Handlebars
+      promptMode: input.promptMode,
+      isChainOfThoughtMode: input.promptMode === 'chain-of-thought',
+      isFewShotMode: input.promptMode === 'few-shot',
+      isRetrievalAugmentedMode: input.promptMode === 'retrieval-augmented',
+      isZeroShotMode: input.promptMode === 'zero-shot',
+      isSelfConsistencyMode: input.promptMode === 'self-consistency',
+      isTreeOfThoughtsMode: input.promptMode === 'tree-of-thoughts',
+      isAutoPromptingMode: input.promptMode === 'auto-prompting',
       technicalTags: glossaryForPrompt,
-    });
+    };
+
+    const { output, usage } = await generateSuggestedPromptGenkitPrompt(promptInternalInput);
     if (!output) {
       throw new Error('No se pudieron obtener los prompts sugeridos de la IA.');
     }

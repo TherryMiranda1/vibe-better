@@ -2,10 +2,21 @@
 
 import type { FormEvent } from "react";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
+import {
+  promptEngineeringModes,
+  type PromptEngineeringMode,
+} from "@/types/prompt-engineering";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Accordion } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 import { ScoreDisplay } from "@/components/score-display";
 import {
   analysisConfig,
@@ -62,6 +73,8 @@ const MAX_HISTORY_ENTRIES = 10;
 
 export const Analysis = () => {
   const updateUserCredits = useUserStore((state) => state.updateUserCredits);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [promptText, setPromptText] = useState<string>("");
   const [analysisResults, setAnalysisResults] = useState<AnalysisSections>(
@@ -74,6 +87,10 @@ export const Analysis = () => {
   const [temporaryActiveAnalyses, setTemporaryActiveAnalyses] =
     useState<Set<AnalysisSectionKey>>(allAnalysisKeys);
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
+  const [promptEngineeringMode, setPromptEngineeringMode] =
+    useState<PromptEngineeringMode>("zero-shot");
+  const [isPromptEngineeringMenuOpen, setIsPromptEngineeringMenuOpen] =
+    useState(false);
 
   const [history, setHistory] = useLocalStorage<HistoryEntry[]>(
     "analysisHistory",
@@ -98,6 +115,23 @@ export const Analysis = () => {
       }
     };
   }, []);
+
+  // Recuperar el prompt de la URL al cargar el componente
+  useEffect(() => {
+    const savedPrompt = searchParams.get('prompt');
+    if (savedPrompt) {
+      try {
+        const decodedPrompt = decodeURIComponent(savedPrompt);
+        setPromptText(decodedPrompt);
+        // Limpiar la URL después de recuperar el prompt
+        const url = new URL(window.location.href);
+        url.searchParams.delete('prompt');
+        router.replace(url.pathname + url.search);
+      } catch (error) {
+        console.error('Error al decodificar el prompt de la URL:', error);
+      }
+    }
+  }, [searchParams, router]);
 
   const saveToHistory = useCallback(
     (
@@ -161,8 +195,7 @@ export const Analysis = () => {
     }
 
     const analysesQueryParam = Array.from(activeAnalyses).join(",");
-    const url = `/api/analyze?prompt=${encodeURIComponent(promptText)}&analyses=${analysesQueryParam}`;
-
+    const url = `/api/analyze?prompt=${encodeURIComponent(promptText)}&analyses=${analysesQueryParam}&promptMode=${promptEngineeringMode}`;
 
     let preflight: Response;
     try {
@@ -411,6 +444,11 @@ export const Analysis = () => {
     setIsSettingsMenuOpen(false);
   };
 
+  const handlePromptEngineeringModeChange = (mode: PromptEngineeringMode) => {
+    setPromptEngineeringMode(mode);
+    setIsPromptEngineeringMenuOpen(false);
+  };
+
   const accordionSectionsToShow = analysisOrder.filter(
     (key) =>
       key !== "score" &&
@@ -490,14 +528,60 @@ export const Analysis = () => {
         </header>
         <CardContent className="p-0">
           <form onSubmit={handleOptimizePrompt} className="space-y-6">
-            <Textarea
-              placeholder="Ej: Quiero crear un componente de React para mostrar una lista de usuarios con paginación y filtros..."
-              value={promptText}
-              rows={6}
-              onChange={(e) => setPromptText(e.target.value)}
-              className="p-4 rounded-lg shadow-inner  bg-card text-foreground placeholder:text-muted-foreground"
-              disabled={isAnalyzing}
-            />
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Ej: Quiero crear un componente de React para mostrar una lista de usuarios con paginación y filtros..."
+                value={promptText}
+                rows={6}
+                onChange={(e) => setPromptText(e.target.value)}
+                className="p-4 rounded-lg shadow-inner bg-card text-foreground placeholder:text-muted-foreground"
+                disabled={isAnalyzing}
+                maxLength={10000}
+              />
+              <div className="text-xs text-muted-foreground text-right pr-1">
+                {promptText.length} / 10000
+              </div>
+              <Accordion type="single" collapsible className="w-full mb-2 ">
+                <AccordionItem value="advanced-mode">
+                  <AccordionTrigger className="w-full flex items-center justify-between rounded-md px-4 py-2 hover:bg-muted text-muted-foreground">
+                    <span className="font-semibold text-sm">Modo avanzado</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-4">
+                    {promptEngineeringModes.map((mode) => {
+                      const Icon = mode.icon;
+                      const selected = promptEngineeringMode === mode.id;
+                      return (
+                        <button
+                          type="button"
+                          key={mode.id}
+                          onClick={() =>
+                            handlePromptEngineeringModeChange(mode.id)
+                          }
+                          disabled={isAnalyzing}
+                          className={`group flex flex-col items-start gap-2 p-4 rounded-lg border transition-colors w-full h-full shadow-sm
+                            ${selected ? "border-primary bg-primary/10 ring-2 ring-primary" : "border-border bg-card hover:bg-primary/10"}
+                            focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
+                        >
+                          <div
+                            className={`flex items-center justify-center rounded-full p-2 mb-1 ${selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"} transition-colors`}
+                          >
+                            <Icon className="w-6 h-6" />
+                          </div>
+                          <span
+                            className={`font-semibold text-xs ${selected ? "text-primary" : "text-foreground"}`}
+                          >
+                            {mode.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground text-left">
+                            {mode.description}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
             <nav className="flex justify-center gap-2">
               <SignedIn>
                 <button
@@ -505,11 +589,14 @@ export const Analysis = () => {
                   className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                   disabled={isAnalyzing || !promptText.trim()}
                 >
-                  {isAnalyzing ? "..." : "Optimizar"} <Zap />
+                  {isAnalyzing ? "Mejorando tu prompt..." : "Optimizar"} <Zap />
                 </button>
               </SignedIn>
               <SignedOut>
-                <SignInButton mode="modal" fallbackRedirectUrl="/">
+                <SignInButton 
+                  mode="modal" 
+                  fallbackRedirectUrl={promptText.trim() ? `/?prompt=${encodeURIComponent(promptText)}` : '/'}
+                >
                   <button
                     onClick={(e) => e.preventDefault()}
                     className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"

@@ -6,6 +6,7 @@ import {
   deleteUser,
   updateUser,
 } from "@/lib/services/user.service";
+import { userCreditsService } from "@/lib/services/server/db/userCredits.service";
 import { logger } from "@/lib/logger/Logger";
 
 export async function POST(req: Request) {
@@ -66,7 +67,15 @@ export async function POST(req: Request) {
           imageUrl: image_url || undefined,
         };
 
-        await createUser(userData);
+        // Crear el usuario en la base de datos
+        const newUser = await createUser(userData);
+
+        // Inicializar los créditos del usuario (10 créditos por defecto)
+        await userCreditsService.initializeUserCredits(newUser.id);
+
+        logger.info(
+          `Usuario creado con ID ${newUser.id} y asignados 10 créditos iniciales`
+        );
         break;
       }
 

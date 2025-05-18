@@ -108,8 +108,43 @@ const deductUserCredits = async (
   }
 };
 
+/**
+ * Initializes a new user with default credits
+ * @param userId The user's ID
+ * @param initialCredits The number of credits to assign (default: 10)
+ */
+const initializeUserCredits = async (
+  userId: string,
+  initialCredits: number = 10
+): Promise<number> => {
+  await connectToDatabase();
+
+  try {
+    // Check if user already has a credit record
+    const existingCredits = await UserCredit.findOne({ userId });
+    
+    if (existingCredits) {
+      logger.info(`User ${userId} already has credits initialized: ${existingCredits.credits}`);
+      return existingCredits.credits;
+    }
+    
+    // Create new credit record with initial credits
+    const userCredit = await UserCredit.create({
+      userId,
+      credits: initialCredits
+    });
+    
+    logger.info(`Initialized ${initialCredits} credits for new user ${userId}`);
+    return userCredit.credits;
+  } catch (error) {
+    logger.error("Error initializing user credits:", error);
+    throw new Error(`Failed to initialize user credits: ${(error as Error).message}`);
+  }
+};
+
 export const userCreditsService = {
   updateUserCredits,
   getUserCredits,
   deductUserCredits,
+  initializeUserCredits,
 };
