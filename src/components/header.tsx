@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { CheckoutSuccessModal } from "./checkout-success-modal";
 
 const DynamicHeaderActions = dynamic(() => import("./header-actions"), {
   ssr: false,
@@ -14,6 +13,13 @@ const DynamicHeaderActions = dynamic(() => import("./header-actions"), {
     <div className="w-12 h-6 rounded-md border animate-pulse bg-primary/5" />
   ),
 });
+
+const DynamicCheckoutSuccessModal = dynamic(
+  () => import("./checkout-success-modal"),
+  {
+    ssr: false,
+  }
+);
 
 export function AppHeader() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,8 +33,8 @@ export function AppHeader() {
   return (
     <header className="px-4 sticky top-4 z-50">
       {/* Modal de confirmación de compra exitosa */}
-      <CheckoutSuccessModal />
-      
+      <DynamicCheckoutSuccessModal />
+
       <div className="max-w-6xl px-4 py-2 mx-auto border-primary/10 border rounded-xl bg-card/90 backdrop-blur-sm flex justify-between items-center">
         <Link href="/" passHref>
           <h1 className="text-xl font-semibold cursor-pointer text-card-foreground hover:text-primary transition-colors">

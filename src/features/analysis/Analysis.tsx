@@ -460,7 +460,7 @@ const Analysis = () => {
 
   return (
     <div className="flex z-20 flex-col max-w-2xl w-full items-center mx-auto text-left">
-      <Card className="w-full bg-background shadow-2xl relative backdrop-blur-sm mb-4 p-2 flex flex-col gap-4">
+      <Card className="w-full rounded-xl bg-background shadow-2xl relative backdrop-blur-sm mb-4 p-2 flex flex-col gap-4">
         <header className="flex justify-between items-center">
           <h3 className="text-md font-bold">
             Ingresa tu prompt de código y lo optimizaremos por ti.
@@ -528,7 +528,7 @@ const Analysis = () => {
                 value={promptText}
                 rows={6}
                 onChange={(e) => setPromptText(e.target.value)}
-                className="p-4 rounded-lg shadow-inner bg-card text-foreground placeholder:text-muted-foreground"
+                className="p-4 rounded-xl shadow-inner bg-card text-foreground placeholder:text-muted-foreground"
                 disabled={isAnalyzing}
                 maxLength={10000}
               />
@@ -537,7 +537,7 @@ const Analysis = () => {
               </div>
               <Accordion type="single" collapsible className="w-full mb-2 ">
                 <AccordionItem value="advanced-mode">
-                  <AccordionTrigger className="w-full flex items-center justify-between rounded-md px-4 py-2 hover:bg-muted text-muted-foreground">
+                  <AccordionTrigger className="w-full flex items-center justify-between rounded-xl px-4 py-2 hover:bg-muted text-muted-foreground">
                     <span className="font-semibold text-sm">Modo avanzado</span>
                   </AccordionTrigger>
                   <AccordionContent className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-4">
@@ -552,7 +552,7 @@ const Analysis = () => {
                             handlePromptEngineeringModeChange(mode.id)
                           }
                           disabled={isAnalyzing}
-                          className={`group flex flex-col items-start gap-2 p-4 rounded-lg border transition-colors w-full h-full shadow-sm
+                          className={`group flex flex-col items-start gap-2 p-4 rounded-xl border transition-colors w-full h-full shadow-sm
                             ${selected ? "border-primary bg-primary/10 ring-2 ring-primary" : "border-border bg-card hover:bg-primary/10"}
                             focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
                         >
@@ -580,7 +580,7 @@ const Analysis = () => {
               <SignedIn>
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                  className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                   disabled={isAnalyzing || !promptText.trim()}
                 >
                   {isAnalyzing ? "Mejorando tu prompt..." : "Optimizar"} <Zap />
@@ -597,7 +597,7 @@ const Analysis = () => {
                 >
                   <button
                     onClick={(e) => e.preventDefault()}
-                    className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                    className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                   >
                     Optimizar <Zap />
                   </button>

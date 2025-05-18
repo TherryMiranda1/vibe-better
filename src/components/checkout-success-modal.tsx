@@ -13,7 +13,7 @@ import {
 import { Button } from "./ui/button";
 import { CheckCircle } from "lucide-react";
 
-export function CheckoutSuccessModal() {
+export default function CheckoutSuccessModal() {
   const [open, setOpen] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
