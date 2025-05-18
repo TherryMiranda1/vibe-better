@@ -1,7 +1,15 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { SignedIn, SignedOut, SignUpButton, UserButton } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
+
+const DynamicHeaderActions = dynamic(() => import("./header-actions"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-12 h-6 rounded-md border animate-pulse bg-primary/5" />
+  ),
+});
 
 export function AppHeader() {
   return (
@@ -28,22 +36,17 @@ export function AppHeader() {
             </Button>
           </Link>
 
-          <SignedIn>
-            <div className="flex items-center gap-3">
-              <UserButton />
-            </div>
-          </SignedIn>
-          <SignedOut>
-            <SignUpButton fallbackRedirectUrl="/">
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-primary/30 hover:bg-primary/5 text-primary hover:text-[var(--color-primary-dark)] rounded-xl"
-              >
-                Sign In
-              </Button>
-            </SignUpButton>
-          </SignedOut>
+          <Link href="/prompts">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-foreground hover:cursor-pointer hover:bg-primary/5 hover:text-[var(--color-primary-dark)]"
+            >
+              Prompts
+            </Button>
+          </Link>
+
+          <DynamicHeaderActions />
         </nav>
       </div>
     </header>

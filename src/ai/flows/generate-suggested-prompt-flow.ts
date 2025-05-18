@@ -14,10 +14,10 @@
  * - GenerateSuggestedPromptOutput - El tipo de salida para la función, conteniendo prompts concisos y elaborados, más el uso de tokens.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-import {technicalTags, type TechnicalTag} from '@/config/technical-tags'; // Importar el glosario
-import type {TokenUsage} from '@/types/analysis';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
+import { technicalTags } from '@/config/technical-tags'; // Importar el glosario
+import type { TokenUsage } from '@/types/analysis';
 
 const GenerateSuggestedPromptInputSchema = z.object({
   originalPrompt: z.string().describe('El prompt original a mejorar.'),
@@ -34,7 +34,7 @@ const GenerateSuggestedPromptLLMOutputSchema = z.object({
   elaboratedSuggestedPrompt: z
     .string()
     .describe(
-      'Un prompt altamente elaborado y cuidadosamente diseñado para lograr los mejores resultados posibles, siguiendo una estructura profesional de ingeniería de prompts (Contexto/Rol, Tarea específica, Detalles y requisitos, Formato de salida, Restricciones, Ejemplos). Esta versión debe usar términos del glosario de forma natural en "Detalles y requisitos" pero SIN enlaces Markdown. También debe considerar la complejidad implícita de la tarea original para guiar al usuario, sugiriendo descomposición si la tarea es muy compleja. Debe estar en español.'
+      'Un prompt altamente elaborado y cuidadosamente diseñado para lograr los mejores resultados posibles, siguiendo una estructura profesional de ingeniería de prompts (Contexto/Rol, Tarea específica, Detalles y requisitos, Formato de salida, Restricciones). Esta versión debe usar términos del glosario de forma natural en "Detalles y requisitos" pero SIN enlaces Markdown. También debe considerar la complejidad implícita de la tarea original para guiar al usuario, sugiriendo descomposición si la tarea es muy compleja. Debe estar en español.'
     ),
 });
 
@@ -59,7 +59,7 @@ const generateSuggestedPromptGenkitPrompt = ai.definePrompt({
   name: 'generateSuggestedPromptWithLinkedTagsPrompt',
   input: {schema: GenerateSuggestedPromptInputSchema},
   output: {schema: GenerateSuggestedPromptLLMOutputSchema}, // LLM generates this
-  prompt: `Eres un experto en refinar prompts para tareas relacionadas con la codificación. Tu objetivo es mejorar el prompt original del usuario para que sea significativamente más efectivo para un asistente de codificación de IA. Generarás DOS versiones del prompt mejorado, ambas en ESPAÑOL: un "Prompt Sugerido Conciso" y un "Prompt Sugerido Elaborado".
+  prompt: `Eres ingeniero de prompts, experto en refinar prompts para tareas relacionadas con la codificación. Eres detallista y analisas detenidamente con el objetivo de mejorar el prompt original del usuario para que sea significativamente más efectivo para un asistente de codificación de IA. Generarás DOS versiones del prompt mejorado, ambas en ESPAÑOL: un "Prompt Sugerido Conciso" y un "Prompt Sugerido Elaborado".
 Tu salida DEBE ser un objeto JSON que se adhiera al esquema de salida definido (conciseSuggestedPrompt, elaboratedSuggestedPrompt). NO incluyas el campo 'usage' en tu respuesta JSON.
 
 Aquí tienes un glosario de atributos técnicos de calidad. Revísalos cuidadosamente.
@@ -91,12 +91,12 @@ Ahora, proporciona las dos versiones del prompt mejorado en ESPAÑOL, basadas en
     (Especifica cómo quieres recibir la respuesta: JSON, lista, código, texto con secciones…)
     # 5. Restricciones
     (Limita la extensión, el tono, el estilo, o cualquier otro aspecto)
-    # 6. Ejemplo de uso (Opcional, si aplica)
-    (Muestra “input → output” para guiar al modelo, si es relevante)
+    # 6. Ejemplo de uso
+    (Si no aplica, no añadas esta sección)
 
     Al generar esta **Sugerencia Elaborada**, considera la complejidad implícita de la tarea descrita en el prompt original.
-    - Si la tarea parece **sencilla o de muy baja complejidad**, la sugerencia elaborada puede ser muy breve, enfocándose solo en las secciones más críticas o incluso indicando que la "Sugerencia Concisa" podría ser suficiente. El objetivo es no abrumar con un prompt extenso para una tarea trivial.
-    - Si la tarea parece de **baja complejidad**, la sugerencia elaborada debe ser completa pero concisa, cubriendo las 6 secciones de forma esencial.
+    - Si la tarea parece **sencilla o de muy baja complejidad**, la sugerencia elaborada puede ser muy breve, enfocándose solo en las secciones más críticas o incluso indicando que la "Sugerencia Concisa" podría ser suficiente.
+    - Si la tarea parece de **baja complejidad**, la sugerencia elaborada debe ser completa pero concisa, cubriendo las secciones de forma esencial.
     - Si la tarea parece de **complejidad moderada**, la sugerencia elaborada debe ser más detallada, especialmente en "Detalles y requisitos" y "Ejemplos". Asegúrate de que los "Detalles y requisitos" incorporen conceptos clave del glosario de forma natural.
     - Si la tarea parece **muy compleja o extensa**, la sugerencia elaborada debería enfocarse en guiar al usuario sobre cómo descomponer la solicitud original en una secuencia de prompts más pequeños y manejables. Puede incluso delinear cuáles podrían ser estos sub-prompts, sugiriendo un enfoque paso a paso. En este caso, la "Sugerencia Elaborada" se convierte en una especie de "meta-prompt" que aconseja sobre la estrategia de prompting para tareas complejas.
 

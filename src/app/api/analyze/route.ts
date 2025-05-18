@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { ai } from "@/ai/genkit";
 import {
   analysisConfig,
@@ -9,6 +8,10 @@ import type { AnalysisSectionKey, AnalysisUpdateEvent } from "@/types/analysis";
 import { evaluateComplexity } from "@/ai/flows/evaluate-complexity-flow";
 import { generateSuggestedPromptWithLinkedTags } from "@/ai/flows/generate-suggested-prompt-flow";
 import { scorePrompt } from "@/ai/flows/score-prompt";
+import { userCreditsService } from "@/lib/services/server/db/userCredits.service";
+import { getCurrentUser } from "@/lib/auth";
+import { logger } from "@/lib/logger/Logger";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic"; // Ensures the route is not statically cached
 
@@ -16,11 +19,37 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const userPrompt = searchParams.get("prompt");
   const analysesParam = searchParams.get("analyses");
+  const operationCost = 1;
 
   if (!userPrompt) {
-    return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+    logger.error("Prompt is required");
+    return new Response(JSON.stringify({ error: "Prompt is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
-  console.log(
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    logger.error("User not found");
+    return new Response(JSON.stringify({ error: "User not found" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const credits = await userCreditsService.getUserCredits(user.id);
+
+  if (credits < operationCost) {
+    logger.error("Not enough credits");
+    return new Response(JSON.stringify({ error: "Not enough credits" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  logger.info(
     `[API_ANALYZE_START] Received prompt: "${userPrompt.substring(
       0,
       50
@@ -36,7 +65,11 @@ export async function GET(request: NextRequest) {
     ? analysisOrder.filter((key) => requestedKeys!.has(key))
     : analysisOrder;
 
-  // let complexityResultForRecommendations: StructuredComplexityResult | null = null; // No longer needed
+  const isPreflight = request.headers.get("Accept") === "application/json";
+  if (!isPreflight) {
+    console.log({ isPreflight });
+    await userCreditsService.deductUserCredits(user.id, operationCost);
+  }
 
   try {
     const stream = new ReadableStream({
@@ -54,7 +87,7 @@ export async function GET(request: NextRequest) {
           if (keysToProcess.includes(key)) {
             const config = analysisConfig[key];
             if (config) {
-              console.log(
+              logger.info(
                 `[API_ANALYZE_SECTION_START] Processing section: ${key}`
               );
               sendEvent(key, LOADING_EVENT_VALUE);
@@ -76,8 +109,6 @@ export async function GET(request: NextRequest) {
                 } else if (key === "score") {
                   const scoreResult = await scorePrompt({ prompt: userPrompt });
                   payloadString = JSON.stringify(scoreResult);
-                  // } else if (key === 'recommendations') {  // This block is removed
-                  //   // Logic for generateContextualRecommendations was here
                 } else {
                   // Generic cases: dependencies, features
                   const { text, usage } = await ai.generate({
@@ -90,19 +121,20 @@ export async function GET(request: NextRequest) {
                     usage: usage,
                   });
                 }
-                console.log(
+
+                logger.info(
                   `[API_ANALYZE_SECTION_END] Section: ${key}, Success: true`
                 );
                 sendEvent(key, payloadString);
               } catch (e) {
-                console.log(
+                logger.error(
                   `[API_ANALYZE_SECTION_END] Section: ${key}, Success: false`
                 );
                 const errorMessage =
                   e instanceof Error
                     ? e.message
                     : "Error desconocido procesando esta sección.";
-                console.error(
+                logger.error(
                   `[API_ANALYZE_SECTION_ERROR] Section: ${key}, Prompt: "${userPrompt.substring(
                     0,
                     50
@@ -121,7 +153,7 @@ export async function GET(request: NextRequest) {
           }
         }
 
-        console.log(
+        logger.info(
           `[API_ANALYZE_STREAM_CLOSING] All requested sections processed. Sending close event.`
         );
         controller.enqueue(
@@ -130,7 +162,7 @@ export async function GET(request: NextRequest) {
         controller.close();
       },
       cancel(reason) {
-        console.warn(
+        logger.warn(
           `[API_ANALYZE_STREAM_CANCELLED] Analysis stream cancelled by client. Reason: ${reason}. Prompt: "${userPrompt.substring(
             0,
             30
@@ -138,8 +170,7 @@ export async function GET(request: NextRequest) {
         );
       },
     });
-
-    console.log(`[API_ANALYZE_RESPONSE] Returning SSE stream response.`);
+    logger.info(`[API_ANALYZE_RESPONSE] Returning SSE stream response.`);
     return new Response(stream, {
       headers: {
         "Content-Type": "text/event-stream",
@@ -153,18 +184,18 @@ export async function GET(request: NextRequest) {
     if (error instanceof Error) {
       message = error.message;
     }
-    console.error(
+    logger.error(
       `[API_ANALYZE_GLOBAL_ERROR] Prompt: "${userPrompt.substring(
         0,
         50
       )}..." Details: ${message}`,
       error
     );
-    return NextResponse.json(
-      {
+    return new Response(
+      JSON.stringify({
         error: "Failed to start analysis stream.",
         details: message.substring(0, 200),
-      },
+      }),
       { status: 500 }
     );
   }

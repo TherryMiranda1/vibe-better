@@ -85,7 +85,7 @@ export function HeroBanner({
   }, [validAnimatedWords, wordIndex, currentText, isDeleting]);
 
   return (
-    <div className="py-16 mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <div className="py-16 mx-auto text-center relative z-10">
       {tagline && (
         <div className="inline-block bg-primary/20 text-primary px-4 py-1 rounded-full text-sm font-medium mb-6 shadow-md">
           {tagline}

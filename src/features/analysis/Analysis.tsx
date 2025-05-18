@@ -4,15 +4,8 @@ import type { FormEvent } from "react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Accordion } from "@/components/ui/accordion";
-import { AnalysisSection } from "@/components/analysis-section";
 import { ScoreDisplay } from "@/components/score-display";
 import {
   analysisConfig,
@@ -26,7 +19,7 @@ import type {
   AnalysisUpdateEvent,
   TokenUsage,
 } from "@/types/analysis";
-import { Sparkles, Settings, Zap } from "lucide-react";
+import { Settings, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
@@ -38,6 +31,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { getUserCredits } from "@/lib/services/client/userCredits.service";
+import useUserStore from "@/context/store";
+import dynamic from "next/dynamic";
+
+const DynamicAnalysisSection = dynamic(
+  () => import("@/components/analysis-section"),
+  { ssr: false }
+);
 
 function getInitialAnalysisState(): AnalysisSections {
   const initialState = {} as Partial<AnalysisSections>;
@@ -60,6 +61,8 @@ const mandatoryKeys: Set<AnalysisSectionKey> = new Set([
 const MAX_HISTORY_ENTRIES = 10;
 
 export const Analysis = () => {
+  const updateUserCredits = useUserStore((state) => state.updateUserCredits);
+
   const [promptText, setPromptText] = useState<string>("");
   const [analysisResults, setAnalysisResults] = useState<AnalysisSections>(
     getInitialAnalysisState()
@@ -120,6 +123,11 @@ export const Analysis = () => {
     [setHistory]
   );
 
+  const updateUser = async () => {
+    const userCredits = await getUserCredits();
+    updateUserCredits(userCredits);
+  };
+
   const handleOptimizePrompt = async (e: FormEvent) => {
     e.preventDefault();
     if (!promptText.trim()) {
@@ -153,11 +161,40 @@ export const Analysis = () => {
     }
 
     const analysesQueryParam = Array.from(activeAnalyses).join(",");
-    const es = new EventSource(
-      `/api/analyze?prompt=${encodeURIComponent(
-        promptText
-      )}&analyses=${analysesQueryParam}`
-    );
+    const url = `/api/analyze?prompt=${encodeURIComponent(promptText)}&analyses=${analysesQueryParam}`;
+
+
+    let preflight: Response;
+    try {
+      preflight = await fetch(url, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+    } catch (networkError) {
+      toast({
+        title: "Error de Red",
+        description: "No se pudo conectar al servidor. Revisa tu conexión.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!preflight.ok) {
+      let errBody: { error?: string; details?: string };
+      try {
+        errBody = await preflight.json();
+      } catch {
+        errBody = { error: "Error desconocido del servidor." };
+      }
+      toast({
+        title: `Error ${preflight.status}`,
+        description: errBody.error ?? "Ocurrió un error inesperado.",
+        variant: "default",
+      });
+      return;
+    }
+
+    const es = new EventSource(url);
     eventSourceRef.current = es;
 
     es.onmessage = (event) => {
@@ -256,7 +293,7 @@ export const Analysis = () => {
       }
     };
 
-    es.onerror = () => {
+    es.onerror = (error) => {
       setTimeout(() => {
         if (streamTerminatedHandledRef.current) {
           if (eventSourceRef.current) {
@@ -267,7 +304,6 @@ export const Analysis = () => {
         }
         streamTerminatedHandledRef.current = true;
 
-        console.error("EventSource failed.");
         toast({
           title: "Error de Conexión con el Servidor",
           description:
@@ -281,9 +317,8 @@ export const Analysis = () => {
             if (activeAnalyses.has(key) && finalState[key].isLoading) {
               finalState[key].isLoading = false;
               if (!finalState[key].content) {
-                finalState[
-                  key
-                ].content = `Error: No se pudo completar el análisis para "${analysisConfig[key].title}".`;
+                finalState[key].content =
+                  `Error: No se pudo completar el análisis para "${analysisConfig[key].title}".`;
               }
             }
           });
@@ -354,7 +389,7 @@ export const Analysis = () => {
           });
         }
       }
-
+      updateUser();
       setIsAnalyzing(false);
 
       if (eventSourceRef.current) {
@@ -392,95 +427,98 @@ export const Analysis = () => {
   );
 
   return (
-    <div className="flex z-20 flex-col max-w-4xl w-full items-center p-4 sm:p-8 mx-auto text-left">
-      <Card className="w-full shadow-2xl relative bg-card backdrop-blur-sm mb-4">
-        <div className="absolute top-4 right-4 z-10">
-          <DropdownMenu
-            open={isSettingsMenuOpen}
-            onOpenChange={handleSettingsMenuOpenChange}
-          >
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={isAnalyzing}>
-                <Settings className="h-5 w-5" />
-                <span className="sr-only">Configurar Análisis</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
-              <DropdownMenuLabel>Seleccionar Análisis</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {analysisOrder.map((key) => {
-                const config = analysisConfig[key];
-                const isMandatory = mandatoryKeys.has(key);
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={key}
-                    checked={isMandatory || temporaryActiveAnalyses.has(key)}
-                    disabled={isMandatory || isAnalyzing}
-                    onCheckedChange={(checked) => {
-                      if (!isMandatory) {
-                        setTemporaryActiveAnalyses((prev) => {
-                          const newSet = new Set(prev);
-                          if (checked) {
-                            newSet.add(key);
-                          } else {
-                            newSet.delete(key);
-                          }
-                          return newSet;
-                        });
-                      }
-                    }}
-                    onSelect={(e) => e.preventDefault()}
-                  >
-                    {config.title}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-              <DropdownMenuSeparator />
-              <div className="p-1">
-                <Button
-                  onClick={handleApplySettings}
-                  className="w-full"
-                  disabled={isAnalyzing}
-                >
-                  Aplicar
-                </Button>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <CardHeader className="text-center">
-          <CardDescription className="text-lg">
+    <div className="flex z-20 flex-col max-w-2xl w-full items-center mx-auto text-left">
+      <Card className="w-full bg-background shadow-2xl relative backdrop-blur-sm mb-4 p-2 flex flex-col gap-4">
+        <header className="flex justify-between items-center">
+          <h3 className="text-md font-bold">
             Ingresa tu prompt de código y lo optimizaremos por ti.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </h3>
+          <div className="m-2">
+            <DropdownMenu
+              open={isSettingsMenuOpen}
+              onOpenChange={handleSettingsMenuOpenChange}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" disabled={isAnalyzing}>
+                  <Settings className="h-5 w-5" />
+                  <span className="sr-only">Configurar Análisis</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>Seleccionar Análisis</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {analysisOrder.map((key) => {
+                  const config = analysisConfig[key];
+                  const isMandatory = mandatoryKeys.has(key);
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={key}
+                      checked={isMandatory || temporaryActiveAnalyses.has(key)}
+                      disabled={isMandatory || isAnalyzing}
+                      onCheckedChange={(checked) => {
+                        if (!isMandatory) {
+                          setTemporaryActiveAnalyses((prev) => {
+                            const newSet = new Set(prev);
+                            if (checked) {
+                              newSet.add(key);
+                            } else {
+                              newSet.delete(key);
+                            }
+                            return newSet;
+                          });
+                        }
+                      }}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      {config.title}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+                <DropdownMenuSeparator />
+                <div className="p-1">
+                  <Button
+                    onClick={handleApplySettings}
+                    className="w-full"
+                    disabled={isAnalyzing}
+                  >
+                    Aplicar
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
+        <CardContent className="p-0">
           <form onSubmit={handleOptimizePrompt} className="space-y-6">
             <Textarea
               placeholder="Ej: Quiero crear un componente de React para mostrar una lista de usuarios con paginación y filtros..."
               value={promptText}
+              rows={6}
               onChange={(e) => setPromptText(e.target.value)}
-              className="min-h-[150px] p-4 rounded-lg shadow-inner focus:ring-1 focus:ring-primary bg-card text-foreground placeholder:text-muted-foreground"
+              className="p-4 rounded-lg shadow-inner  bg-card text-foreground placeholder:text-muted-foreground"
               disabled={isAnalyzing}
             />
-            <SignedIn>
-              <button
-                type="submit"
-                className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                disabled={isAnalyzing || !promptText.trim()}
-              >
-                {isAnalyzing ? "Analizando..." : "Optimizar Prompt"} <Zap />
-              </button>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton mode="modal" fallbackRedirectUrl="/">
+            <nav className="flex justify-center gap-2">
+              <SignedIn>
                 <button
-                  onClick={(e) => e.preventDefault()}
+                  type="submit"
                   className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                  disabled={isAnalyzing || !promptText.trim()}
                 >
-                  Optimizar Prompt
+                  {isAnalyzing ? "..." : "Optimizar"} <Zap />
                 </button>
-              </SignInButton>
-            </SignedOut>
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal" fallbackRedirectUrl="/">
+                  <button
+                    onClick={(e) => e.preventDefault()}
+                    className="flex items-center justify-center gap-2 text-primary border border px-6 py-2 w-full text-lg rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                  >
+                    Optimizar <Zap />
+                  </button>
+                </SignInButton>
+              </SignedOut>
+            </nav>
           </form>
         </CardContent>
       </Card>
@@ -494,7 +532,7 @@ export const Analysis = () => {
                 const section = analysisResults[key];
                 if (!section || !activeAnalyses.has(key)) return null;
                 return (
-                  <AnalysisSection
+                  <DynamicAnalysisSection
                     key={key}
                     itemKey={key}
                     title={section.title}

@@ -33,6 +33,7 @@ import Image from "next/image";
 import { HeroBanner } from "@/features/landing/hero-banner";
 import { Analysis } from "@/features/analysis/Analysis";
 import { HoverSurface } from "@/features/landing/hover-surface";
+import { FeaturedPrompts } from "@/components/featured-prompts";
 
 const FeatureCard: React.FC<{
   icon: React.ReactNode;
@@ -127,7 +128,7 @@ export default function LandingPage() {
               paso, ofreciendo:
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard
               icon={<Gauge className="h-7 w-7" />}
               title="Evaluación de Complejidad"
@@ -185,7 +186,7 @@ export default function LandingPage() {
             </div>
             <div className="mt-10 lg:mt-0">
               <Image
-                src="https://placehold.co/600x450.png"
+                src="https://res.cloudinary.com/dtlaxm8gi/image/upload/v1747482862/image_tlzkkg.png"
                 alt="Developer working efficiently"
                 width={600}
                 height={450}
@@ -203,7 +204,7 @@ export default function LandingPage() {
           <h2 className="text-4xl font-bold text-center mb-12">
             Simple, Rápido y Efectivo
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-12 text-center">
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 text-center">
             <div className="text-center">
               <div className="bg-primary text-primary-foreground rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <Edit3 className="h-8 w-8" />
@@ -240,13 +241,24 @@ export default function LandingPage() {
               <h3 className="text-xl font-semibold mb-2">4. Copia tu Prompt</h3>
               <p className="text-muted-foreground">Compacto o profesional.</p>
             </div>
-            <div className="text-center md:col-span-2 lg:col-span-1 lg:col-start-auto md:col-start-2">
+            <div className="text-center">
               <div className="bg-primary text-primary-foreground rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
               <h3 className="text-xl font-semibold mb-2">5. Genera Código</h3>
               <p className="text-muted-foreground">
                 Pégalo en tu IA y obtén código impecable.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="bg-primary text-primary-foreground rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <DollarSign className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">
+                6. Ahorra tiempo y dinero
+              </h3>
+              <p className="text-muted-foreground">
+                Sacando el maximo de la IA en cada petición.
               </p>
             </div>
           </div>
@@ -293,6 +305,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Featured Prompts Section */}
+      <FeaturedPrompts />
 
       {/* Testimonios Section */}
       <section className="py-16 md:py-24 bg-background">

@@ -215,7 +215,7 @@ const isContentError = (text: string | undefined): boolean => {
   return false;
 };
 
-export function AnalysisSection({
+export default function AnalysisSection({
   itemKey,
   title,
   Icon,
@@ -233,17 +233,13 @@ export function AnalysisSection({
   const handleGlossaryTagClick = (tag: TechnicalTag) => {
     setActiveGlossaryTag(tag);
   };
-  console.log(content);
   const MarkdownLinkRenderer: React.FC<React.PropsWithChildren<any>> = ({
     node,
     ...props
   }) => {
     const tagName = props.children as string;
-    console.log(props, node);
-    console.log(technicalTags);
     if (tagName) {
       const tag = findTagInGlossary(tagName);
-      console.log(tag);
       if (tag) {
         return (
           <span
@@ -708,15 +704,18 @@ export function AnalysisSection({
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>{activeGlossaryTag.name}</AlertDialogTitle>
-              <AlertDialogDescription>
-                <p className="text-sm text-muted-foreground mb-2">
-                  <strong>Categoría:</strong> {activeGlossaryTag.category}
-                </p>
-                {activeGlossaryTag.description}
+              <AlertDialogDescription className="text-sm gap-2 text-muted-foreground mb-2">
+                <label className="font-semibold text-sm border border-primary rounded-full px-2 py-1">
+                  {activeGlossaryTag.category}
+                </label>
+                <span className="block pt-4">{activeGlossaryTag.description}</span>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setActiveGlossaryTag(null)}>
+              <AlertDialogAction
+                className="bg-foreground text-background"
+                onClick={() => setActiveGlossaryTag(null)}
+              >
                 Cerrar
               </AlertDialogAction>
             </AlertDialogFooter>

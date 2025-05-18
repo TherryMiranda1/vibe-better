@@ -55,15 +55,15 @@ const getEmotionalFeedback = (score: number | null): EmotionalFeedback => {
     return { text: 'Puntuación no disponible', variant: 'secondary', className: 'bg-muted text-muted-foreground' };
   }
   if (score >= 90) {
-    return { text: '¡Excelente!', variant: 'default', className: 'bg-green-500 hover:bg-green-600 text-white' };
+    return { text: '¡Excelente!', variant: 'default', className: 'bg-green-500 text-background' };
   }
   if (score >= 70) {
-    return { text: '¡Muy Bien!', variant: 'default', className: 'bg-primary hover:bg-primary/90 text-primary-foreground' };
+    return { text: '¡Muy Bien!', variant: 'default', className: 'bg-primary text-background' };
   }
   if (score >= 50) {
-    return { text: '¡Buen Comienzo!', variant: 'default', className: 'bg-yellow-400 hover:bg-yellow-500 text-black' };
+    return { text: '¡Buen Comienzo!', variant: 'default', className: 'bg-yellow-400 text-background' };
   }
-  return { text: 'Necesita Mejoras', variant: 'destructive', className: 'bg-red-600 hover:bg-red-700 text-white' };
+  return { text: 'Necesita Mejoras', variant: 'destructive', className: 'bg-red-600 text-background' };
 };
 
 export function ScoreDisplay({ scoreContent, isLoading, usage }: ScoreDisplayProps) {
