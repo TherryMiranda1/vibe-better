@@ -65,7 +65,7 @@ export default function RootLayout({
           className={`${montserrat.variable} antialiased bg-background text-foreground`}
         >
           <AppHeader />
-          <main>{children}</main>
+          <main className="pb-32">{children}</main>
           <Footer config={footerData.config} />
           <Toaster />
         </body>
