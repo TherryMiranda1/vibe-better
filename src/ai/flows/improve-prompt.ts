@@ -29,6 +29,7 @@ const improvePromptPrompt = ai.definePrompt({
   input: {schema: ImprovePromptInputSchema},
   output: {schema: ImprovePromptOutputSchema},
   prompt: `You are an expert at refining prompts for coding-related tasks. Given the following prompt, suggest improvements to enhance its clarity, specificity, and overall effectiveness.
+Always respond using the original prompt language.
 
 Original Prompt: {{{prompt}}}
 
