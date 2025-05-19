@@ -5,7 +5,7 @@ import { HoverSurface } from "@/features/landing/hover-surface";
 import dynamic from "next/dynamic";
 
 const DynamicAnalysis = dynamic(() => import("@/features/analysis/Analysis"), {
-  ssr: true,
+  ssr: false,
 });
 const DynamicLandingSections = dynamic(
   () => import("@/features/landing-sections/landing-sections"),

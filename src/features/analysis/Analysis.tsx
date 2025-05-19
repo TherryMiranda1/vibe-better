@@ -61,7 +61,6 @@ const mandatoryKeys: Set<AnalysisSectionKey> = new Set([
   "suggestedPrompt",
   "score",
 ]);
-const MAX_HISTORY_ENTRIES = 10;
 
 const Analysis = () => {
   const updateUserCredits = useUserStore((state) => state.updateUserCredits);
