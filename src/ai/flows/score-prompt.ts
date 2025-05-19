@@ -48,14 +48,14 @@ const scorePromptPrompt = ai.definePrompt({
   name: 'scorePromptPrompt',
   input: {schema: ScorePromptInputSchema},
   output: {schema: ScorePromptLLMOutputSchema}, // LLM generates this
-  prompt: `Eres un experto en calificar prompts de IA. Recibirás un prompt y asignarás una puntuación del 0 al 100 basada en la claridad y especificidad del prompt.
+  prompt: `Eres un experto en calificar prompts de IA. Recibirás un prompt y asignarás una puntuación del 0 al 100 basada en la claridad, especificidad y efectividad del prompt.
 Tu salida DEBE ser un objeto JSON que se adhiera al esquema de salida definido (score, explanation). NO incluyas el campo 'usage' en tu respuesta JSON.
 
 Al asignar la puntuación, considera la efectividad del prompt *en relación a su complejidad aparente*.
 - Un buen prompt para una tarea **sencilla** debe ser claro y directo.
 - Un buen prompt para una tarea **compleja** no solo debe ser claro y específico, sino también demostrar una comprensión del alcance de la tarea. Esto podría reflejarse incluyendo suficientes detalles, sugiriendo una estructura adecuada, o reconociendo implícitamente la necesidad de un desglose si el prompt original es demasiado ambicioso para un solo paso. Un prompt muy corto para una tarea claramente compleja podría obtener una puntuación menor si carece de los detalles necesarios para que una IA tenga éxito. Por el contrario, un prompt excesivamente verboso para una tarea muy simple también podría perder puntos en concisión y claridad.
 
-Proporciona una explicación detallada para la puntuación EN ESPAÑOL, incluyendo cómo cada factor (claridad, especificidad, uso de tags, adecuación a la complejidad) influyó en la puntuación final.
+Proporciona una explicación detallada para la puntuación EN EL IDIOMA DEL PROMPT, incluyendo cómo cada factor (claridad, especificidad, efectividad, adecuación a la complejidad) influyó en la puntuación final.
 
 Prompt a calificar:
 {{{prompt}}}`,
