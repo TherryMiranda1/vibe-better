@@ -6,8 +6,10 @@ import Head from "next/head";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { AppHeader } from "@/components/header";
+import { footerData } from "@/config/footer-config";
+import Footer from "@/components/footer/Footer";
 
-// Configure Montserrat font
+
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
@@ -64,6 +66,7 @@ export default function RootLayout({
         >
           <AppHeader />
           <main>{children}</main>
+          <Footer config={footerData.config} />
           <Toaster />
         </body>
       </html>
