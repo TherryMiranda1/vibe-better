@@ -1,5 +1,4 @@
-
-'use server';
+"use server";
 /**
  * @fileOverview Este archivo define un flujo de Genkit para generar un prompt de usuario mejorado.
  * Genera dos versiones:
@@ -14,15 +13,26 @@
  * - GenerateSuggestedPromptOutput - El tipo de salida para la función, conteniendo prompts concisos y elaborados, más el uso de tokens.
  */
 
-import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
-import { technicalTags } from '@/config/technical-tags'; // Importar el glosario
-import type { TokenUsage } from '@/types/analysis';
-import type { PromptEngineeringMode } from '@/types/prompt-engineering';
+import { ai } from "@/ai/genkit";
+import { z } from "genkit";
+import { technicalTags } from "@/config/technical-tags"; // Importar el glosario
+import type { TokenUsage } from "@/types/analysis";
+import type { PromptEngineeringMode } from "@/types/prompt-engineering";
 
 const GenerateSuggestedPromptInputSchema = z.object({
-  originalPrompt: z.string().describe('El prompt original a mejorar.'),
-  promptMode: z.enum(['chain-of-thought', 'few-shot', 'retrieval-augmented', 'zero-shot', 'self-consistency', 'tree-of-thoughts', 'auto-prompting']).describe('El modo de prompt engineering a aplicar.').default('zero-shot'),
+  originalPrompt: z.string().describe("El prompt original a mejorar."),
+  promptMode: z
+    .enum([
+      "chain-of-thought",
+      "few-shot",
+      "retrieval-augmented",
+      "zero-shot",
+      "self-consistency",
+      "tree-of-thoughts",
+      "auto-prompting",
+    ])
+    .describe("El modo de prompt engineering a aplicar.")
+    .default("zero-shot"),
 });
 
 // Esquema interno para la plantilla del prompt, incluyendo flags de modo y technicalTags
@@ -34,31 +44,37 @@ const InternalPromptInputSchema = GenerateSuggestedPromptInputSchema.extend({
   isSelfConsistencyMode: z.boolean(),
   isTreeOfThoughtsMode: z.boolean(),
   isAutoPromptingMode: z.boolean(),
-  technicalTags: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    description: z.string(),
-    category: z.string(),
-  })),
+  technicalTags: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string(),
+      category: z.string(),
+    })
+  ),
 });
-export type GenerateSuggestedPromptInput = z.infer<typeof GenerateSuggestedPromptInputSchema>;
+export type GenerateSuggestedPromptInput = z.infer<
+  typeof GenerateSuggestedPromptInputSchema
+>;
 
 // This schema defines what the LLM should generate
 const GenerateSuggestedPromptLLMOutputSchema = z.object({
   conciseSuggestedPrompt: z
     .string()
     .describe(
-      'Una versión concisa y mejorada del prompt, con términos técnicos relevantes del glosario formateados como enlaces Markdown (ej., [término](glossary://tag-id)). Enfocarse en la directividad y claridad. Debe estar en español.'
+      "A concise and improved version of the prompt, with relevant technical terms from the glossary formatted as Markdown links (e.g., [term](glossary://tag-id)). Focus on directness and clarity."
     ),
   elaboratedSuggestedPrompt: z
     .string()
     .describe(
-      'Un prompt altamente elaborado y cuidadosamente diseñado para lograr los mejores resultados posibles, siguiendo una estructura profesional de ingeniería de prompts (Contexto/Rol, Tarea específica, Detalles y requisitos, Formato de salida, Restricciones). Esta versión debe usar términos del glosario de forma natural en "Detalles y requisitos" pero SIN enlaces Markdown. También debe considerar la complejidad implícita de la tarea original para guiar al usuario, sugiriendo descomposición si la tarea es muy compleja. Debe estar en español.'
+      'A highly refined and carefully crafted prompt designed to achieve the best possible results, following—if appropriate—a professional prompt engineering structure (Context/Role, Specific Task, Details and Requirements, Output Format, Constraints). This version should use glossary terms naturally within the "Details and Requirements" section but WITHOUT Markdown links. It MUST also account for the implicit complexity of the original task to guide the user. It is IMPORTANT to suggest decomposition if the task is overly complex.'
     ),
 });
 
 // This is the actual output type of the flow
-export type GenerateSuggestedPromptOutput = z.infer<typeof GenerateSuggestedPromptLLMOutputSchema> & { usage?: TokenUsage };
+export type GenerateSuggestedPromptOutput = z.infer<
+  typeof GenerateSuggestedPromptLLMOutputSchema
+> & { usage?: TokenUsage };
 
 export async function generateSuggestedPromptWithLinkedTags(
   input: GenerateSuggestedPromptInput
@@ -67,7 +83,7 @@ export async function generateSuggestedPromptWithLinkedTags(
 }
 
 // Preparar los datos del glosario para la plantilla del prompt
-const glossaryForPrompt = technicalTags.map(tag => ({
+const glossaryForPrompt = technicalTags.map((tag) => ({
   id: tag.id,
   name: tag.name,
   description: tag.description,
@@ -75,9 +91,9 @@ const glossaryForPrompt = technicalTags.map(tag => ({
 }));
 
 const generateSuggestedPromptGenkitPrompt = ai.definePrompt({
-  name: 'generateSuggestedPromptWithLinkedTagsPrompt',
-  input: {schema: InternalPromptInputSchema}, // Usar el esquema interno
-  output: {schema: GenerateSuggestedPromptLLMOutputSchema}, // LLM generates this
+  name: "generateSuggestedPromptWithLinkedTagsPrompt",
+  input: { schema: InternalPromptInputSchema }, // Usar el esquema interno
+  output: { schema: GenerateSuggestedPromptLLMOutputSchema }, // LLM generates this
   prompt: `Eres ingeniero de prompts, experto en refinar prompts para tareas relacionadas con la codificación. Eres detallista y analisas detenidamente con el objetivo de mejorar el prompt original del usuario para que sea significativamente más efectivo para un asistente de codificación de IA. Generarás DOS versiones del prompt mejorado, ambas en ESPAÑOL: un "Prompt Sugerido Conciso" y un "Prompt Sugerido Elaborado".
 
 Modo de Prompt Engineering seleccionado: {{promptMode}}
@@ -162,29 +178,31 @@ Ahora, proporciona las dos versiones del prompt mejorado en ESPAÑOL, basadas en
 
 const generateSuggestedPromptFlow = ai.defineFlow(
   {
-    name: 'generateSuggestedPromptFlow',
+    name: "generateSuggestedPromptFlow",
     inputSchema: GenerateSuggestedPromptInputSchema,
     outputSchema: GenerateSuggestedPromptLLMOutputSchema, // LLM generates this
   },
-  async (input: GenerateSuggestedPromptInput): Promise<GenerateSuggestedPromptOutput> => {
+  async (
+    input: GenerateSuggestedPromptInput
+  ): Promise<GenerateSuggestedPromptOutput> => {
     const promptInternalInput = {
       originalPrompt: input.originalPrompt,
       promptMode: input.promptMode,
-      isChainOfThoughtMode: input.promptMode === 'chain-of-thought',
-      isFewShotMode: input.promptMode === 'few-shot',
-      isRetrievalAugmentedMode: input.promptMode === 'retrieval-augmented',
-      isZeroShotMode: input.promptMode === 'zero-shot',
-      isSelfConsistencyMode: input.promptMode === 'self-consistency',
-      isTreeOfThoughtsMode: input.promptMode === 'tree-of-thoughts',
-      isAutoPromptingMode: input.promptMode === 'auto-prompting',
+      isChainOfThoughtMode: input.promptMode === "chain-of-thought",
+      isFewShotMode: input.promptMode === "few-shot",
+      isRetrievalAugmentedMode: input.promptMode === "retrieval-augmented",
+      isZeroShotMode: input.promptMode === "zero-shot",
+      isSelfConsistencyMode: input.promptMode === "self-consistency",
+      isTreeOfThoughtsMode: input.promptMode === "tree-of-thoughts",
+      isAutoPromptingMode: input.promptMode === "auto-prompting",
       technicalTags: glossaryForPrompt,
     };
 
-    const { output, usage } = await generateSuggestedPromptGenkitPrompt(promptInternalInput);
+    const { output, usage } =
+      await generateSuggestedPromptGenkitPrompt(promptInternalInput);
     if (!output) {
-      throw new Error('No se pudieron obtener los prompts sugeridos de la IA.');
+      throw new Error("No se pudieron obtener los prompts sugeridos de la IA.");
     }
     return { ...output, usage };
   }
 );
-
