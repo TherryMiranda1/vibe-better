@@ -30,6 +30,7 @@ import {
 import { PromptDetailView } from "@/components/prompt-detail-view";
 import { Prompt, FilterState } from "@/types/prompts";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
+import { PageHeader } from "@/components/seo/PageHeader";
 
 const PromptsPage = () => {
   // State for filters and sorting
@@ -250,13 +251,10 @@ const PromptsPage = () => {
           { label: "Prompts", href: "/prompts" },
         ]}
       />
-      <div className="flex flex-col space-y-4 mb-8">
-        <h1 className="text-3xl font-bold">Library of Prompts</h1>
-        <p className="text-muted-foreground">
-          Explore our collection of optimized prompts to improve your
-          interactions with LLMs and generate high-quality code.
-        </p>
-      </div>
+      <PageHeader
+        title="Library of Prompts"
+        description="Explore our collection of optimized prompts to improve your interactions with LLMs and generate high-quality code."
+      />
 
       {/* Filters */}
       <div className="mb-8">

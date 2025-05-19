@@ -43,6 +43,8 @@ import type {
   StructuredSuggestedPromptResult,
   StructuredNextStepsResult,
 } from "@/types/analysis";
+import { Breadcrumbs } from "@/components/ui/breadcrumb";
+import { PageHeader } from "@/components/seo/PageHeader";
 
 // Helper functions for formatting analysis content
 const getComplexityColorClass = (level: string): string => {
@@ -154,18 +156,17 @@ const MyAnalysis = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-5xl">
-      <div className="flex items-center mb-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="mr-2"
-          onClick={() => router.push("/")}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-3xl font-bold">My Analyses</h1>
-      </div>
+    <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "My Analyses", href: "/my-analysis" },
+        ]}
+      />
+      <PageHeader
+        title="My Analyses"
+        description="Manage your analyses and view the results"
+      />
 
       <SignedIn>
         {loading ? (
@@ -499,7 +500,7 @@ const MyAnalysis = () => {
             <p className="text-muted-foreground mb-6">
               When you analyze prompts, they will be automatically saved here.
             </p>
-            <Button onClick={() => router.push("/")}>
+            <Button className="text-foreground font-bold" onClick={() => router.push("/")}>
               Create a new analysis
             </Button>
           </div>

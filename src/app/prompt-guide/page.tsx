@@ -6,32 +6,22 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Lightbulb, Brain } from "lucide-react";
+import { Breadcrumbs } from "@/components/ui/breadcrumb";
+import { PageHeader } from "@/components/seo/PageHeader";
 
 export default function PromptGuidePage() {
   return (
-    <div className="container mx-auto py-12 px-4">
-      <div className="flex justify-between items-center mb-8">
-        <Link href="/">
-          <Button variant="ghost" className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
-          </Button>
-        </Link>
-      </div>
-
-      <div className="text-center mb-16">
-        <div className="flex justify-center items-center gap-3 mb-4">
-          <Brain className="h-8 w-8 text-accent" />
-          <Lightbulb className="h-8 w-8 text-primary" />
-        </div>
-        <h1 className="text-4xl font-bold mb-4 text-primary">
-          Effective AI Prompting Guide
-        </h1>
-        <p className="text-lg max-w-2xl mx-auto text-muted-foreground">
-          Learn how to craft effective prompts to get the most out of
-          AI-generated code and solutions
-        </p>
-      </div>
+    <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Prompt Guide", href: "/prompt-guide" },
+        ]}
+      />
+      <PageHeader
+        title="Effective AI Prompting Guide"
+        description="Learn how to craft effective prompts to get the most out of AI-generated code and solutions"
+      />
 
       <div className="grid grid-cols-1 gap-16">
         <section id="why-be-specific">
@@ -78,7 +68,9 @@ export default function PromptGuidePage() {
                 improve your AI-generated results.
               </p>
               <Link href="/#analyze">
-                <Button className="w-full text-background font-semibold">Try Prompt Analysis</Button>
+                <Button className="w-full text-background font-semibold">
+                  Try Prompt Analysis
+                </Button>
               </Link>
             </div>
           </div>

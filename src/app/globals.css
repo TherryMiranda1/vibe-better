@@ -59,6 +59,11 @@
   }
 }
 
+textarea:focus {
+  outline: none;
+  border: none;
+}
+
 @layer base {
   * {
     @apply border-border;

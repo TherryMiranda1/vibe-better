@@ -23,8 +23,9 @@ import {
 } from "@/config/analysis-config";
 import type {
   AnalysisSections,
-  AnalysisSectionKey, AnalysisUpdateEvent,
-  TokenUsage
+  AnalysisSectionKey,
+  AnalysisUpdateEvent,
+  TokenUsage,
 } from "@/types/analysis";
 import { Loader2, Settings, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -349,12 +350,6 @@ const Analysis = () => {
       analysisOrder.forEach((key) => {
         if (activeAnalyses.has(key) && analysisResults[key]?.content) {
           resultsToSave[key] = analysisResults[key].content;
-        } else if (
-          mandatoryKeys.has(key) &&
-          activeAnalyses.has(key) &&
-          !analysisResults[key]?.content
-        ) {
-          allMandatoryComplete = false;
         }
       });
 
@@ -450,163 +445,161 @@ const Analysis = () => {
 
   return (
     <div className="flex z-20 flex-col max-w-2xl w-full items-center mx-auto text-left">
-      <section id="analyze" className="w-full relative mb-4 flex flex-col gap-4">
-        <div>
-          <form onSubmit={handleOptimizePrompt} className="space-y-6">
-            <div className="relative">
-              <div className="absolute top-1 right-1 text-xs text-muted-foreground opacity-50">
-                {promptText.length} / 10000
-              </div>
-              <Textarea
-                placeholder="Enter your prompt and we will optimize it for you. Ej: I want to create a React component to display a list of users with pagination and filters..."
-                value={promptText}
-                rows={6}
-                onChange={(e) => setPromptText(e.target.value)}
-                className="p-4 rounded-xl bg-card text-foreground shadow-primary placeholder:text-muted-foreground placeholder:text-xs border-primary/20"
-                disabled={isAnalyzing}
-                maxLength={10000}
-              />
+      <section
+        id="analyze"
+        className="w-full relative mb-4 flex flex-col gap-4"
+      >
+        <form
+          onSubmit={handleOptimizePrompt}
+          className="border bg-card rounded-xl"
+        >
+          <div className="absolute top-1 right-1 text-xs text-muted-foreground opacity-50">
+            {promptText.length} / 10000
+          </div>
+          <Textarea
+            placeholder="Enter your prompt and we will optimize it for you. Ej: I want to create a React component to display a list of users with pagination and filters..."
+            value={promptText}
+            rows={6}
+            onChange={(e) => setPromptText(e.target.value)}
+            className="p-4 rounded-xl bg-card text-foreground"
+            disabled={isAnalyzing}
+            maxLength={10000}
+          />
 
-              <Accordion type="single" collapsible className="w-full mt-4 ">
-                <AccordionItem value="advanced-mode">
-                  <AccordionTrigger className="w-full flex items-center justify-between rounded-xl px-4 py-2 hover:bg-muted text-muted-foreground">
-                    <span className="font-semibold text-sm">Advanced mode</span>
-                  </AccordionTrigger>
-                  <AccordionContent className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-4">
-                    {promptEngineeringModes.map((mode) => {
-                      const Icon = mode.icon;
-                      const selected = promptEngineeringMode === mode.id;
-                      return (
-                        <button
-                          type="button"
-                          key={mode.id}
-                          onClick={() =>
-                            handlePromptEngineeringModeChange(mode.id)
-                          }
-                          disabled={isAnalyzing}
-                          className={`group flex flex-col items-start gap-2 p-4 rounded-xl border transition-colors w-full h-full shadow-sm
-                            ${selected ? "border-primary bg-primary/10 ring-2 ring-primary" : "border-border bg-card hover:bg-primary/10"}
-                            focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
-                        >
-                          <div
-                            className={`flex items-center justify-center rounded-full p-2 mb-1 ${selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"} transition-colors`}
-                          >
-                            <Icon className="w-6 h-6" />
-                          </div>
-                          <span
-                            className={`font-semibold text-xs ${selected ? "text-primary" : "text-foreground"}`}
-                          >
-                            {mode.name}
-                          </span>
-                          <span className="text-xs text-muted-foreground text-left">
-                            {mode.description}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-            <nav className="flex justify-center items-center gap-2">
-              <SignedIn>
-                <button
-                  type="submit"
-                  className="flex items-center bg-white  justify-center gap-2 text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-                  disabled={isAnalyzing || !promptText.trim()}
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <Loader2 className="animate-spin" /> Improving your
-                      prompt...
-                    </>
-                  ) : (
-                    <>
-                      Optimize
-                      <Zap className="w-5 h-5 text-primary" />
-                    </>
-                  )}
-                </button>
-              </SignedIn>
-              <SignedOut>
-                <SignInButton
-                  mode="modal"
-                  fallbackRedirectUrl={
-                    promptText.trim()
-                      ? `/?prompt=${encodeURIComponent(promptText)}`
-                      : "/"
-                  }
-                >
-                  <button
-                    onClick={(e) => e.preventDefault()}
-                    className="flex items-center justify-center gap-2 bg-white text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-                  >
-                    Optimize <Zap />
-                  </button>
-                </SignInButton>
-              </SignedOut>
-              <DropdownMenu
-                open={isSettingsMenuOpen}
-                onOpenChange={handleSettingsMenuOpenChange}
+          <nav className="flex justify-center items-center gap-2 p-2">
+            <SignedIn>
+              <button
+                type="submit"
+                className="flex items-center bg-white  justify-center gap-2 text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                disabled={isAnalyzing || !promptText.trim()}
               >
-                <DropdownMenuTrigger asChild>
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="animate-spin" /> Improving your
+                    prompt...
+                  </>
+                ) : (
+                  <>
+                    Optimize
+                    <Zap className="w-5 h-5 text-primary" />
+                  </>
+                )}
+              </button>
+            </SignedIn>
+            <SignedOut>
+              <SignInButton
+                mode="modal"
+                fallbackRedirectUrl={
+                  promptText.trim()
+                    ? `/?prompt=${encodeURIComponent(promptText)}`
+                    : "/"
+                }
+              >
+                <button
+                  onClick={(e) => e.preventDefault()}
+                  className="flex items-center justify-center gap-2 bg-white text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                >
+                  Optimize <Zap />
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <DropdownMenu
+              open={isSettingsMenuOpen}
+              onOpenChange={handleSettingsMenuOpenChange}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-2 hover:bg-primary/10 py-5  rounded-xl"
+                  disabled={isAnalyzing}
+                >
+                  <Settings className="h-6 w-6" />
+                  <span className="sr-only">Analysis Settings</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuLabel>Analysis Settings</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {analysisOrder.map((key) => {
+                  const config = analysisConfig[key];
+                  const isMandatory = mandatoryKeys.has(key);
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={key}
+                      checked={isMandatory || temporaryActiveAnalyses.has(key)}
+                      disabled={isMandatory || isAnalyzing}
+                      onCheckedChange={(checked) => {
+                        if (!isMandatory) {
+                          setTemporaryActiveAnalyses((prev) => {
+                            const newSet = new Set(prev);
+                            if (checked) {
+                              newSet.add(key);
+                            } else {
+                              newSet.delete(key);
+                            }
+                            return newSet;
+                          });
+                        }
+                      }}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      {config.title}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+                <DropdownMenuSeparator />
+                <div className="p-1">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="ml-2 hover:bg-primary/10 py-5  rounded-xl"
+                    onClick={handleApplySettings}
+                    className="w-full"
                     disabled={isAnalyzing}
                   >
-                    <Settings className="h-6 w-6" />
-                    <span className="sr-only">Analysis Settings</span>
+                    Apply
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64">
-                  <DropdownMenuLabel>Analysis Settings</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {analysisOrder.map((key) => {
-                    const config = analysisConfig[key];
-                    const isMandatory = mandatoryKeys.has(key);
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={key}
-                        checked={
-                          isMandatory || temporaryActiveAnalyses.has(key)
-                        }
-                        disabled={isMandatory || isAnalyzing}
-                        onCheckedChange={(checked) => {
-                          if (!isMandatory) {
-                            setTemporaryActiveAnalyses((prev) => {
-                              const newSet = new Set(prev);
-                              if (checked) {
-                                newSet.add(key);
-                              } else {
-                                newSet.delete(key);
-                              }
-                              return newSet;
-                            });
-                          }
-                        }}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        {config.title}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-                  <DropdownMenuSeparator />
-                  <div className="p-1">
-                    <Button
-                      onClick={handleApplySettings}
-                      className="w-full"
-                      disabled={isAnalyzing}
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </nav>
+        </form>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="advanced-mode">
+            <AccordionTrigger className="w-full flex items-center justify-between rounded-xl px-4 py-2 hover:bg-muted text-muted-foreground">
+              <span className="font-semibold text-sm">Advanced mode</span>
+            </AccordionTrigger>
+            <AccordionContent className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-4">
+              {promptEngineeringModes.map((mode) => {
+                const Icon = mode.icon;
+                const selected = promptEngineeringMode === mode.id;
+                return (
+                  <button
+                    type="button"
+                    key={mode.id}
+                    onClick={() => handlePromptEngineeringModeChange(mode.id)}
+                    disabled={isAnalyzing}
+                    className={`group flex flex-col items-start gap-2 p-4 rounded-xl border transition-colors w-full h-full shadow-sm
+                            ${selected ? "border-primary bg-primary/10 ring-2 ring-primary" : "border-border bg-card hover:bg-primary/10"}
+                            focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
+                  >
+                    <div
+                      className={`flex items-center justify-center rounded-full p-2 mb-1 ${selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"} transition-colors`}
                     >
-                      Apply
-                    </Button>
-                  </div>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </nav>
-          </form>
-        </div>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span
+                      className={`font-semibold text-xs ${selected ? "text-primary" : "text-foreground"}`}
+                    >
+                      {mode.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground text-left">
+                      {mode.description}
+                    </span>
+                  </button>
+                );
+              })}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </section>
 
       {hasAnyActiveAnalysisStartedOrHasContent &&

@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
-import { BookMarked } from "lucide-react";
 import { technicalTags, type TechnicalTag } from "@/config/technical-tags";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Accordion,
   AccordionContent,
@@ -15,6 +8,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
+import { PageHeader } from "@/components/seo/PageHeader";
+
 interface CategorizedTags {
   [category: string]: TechnicalTag[];
 }
@@ -38,27 +33,20 @@ export default function GlossaryPage() {
   const categories = Object.keys(categorizedTags).sort();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center p-4 sm:p-8">
-      <div className="w-full max-w-3xl">
+    <div className="min-h-screen bg-background flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-7xl mx-auto">
         <Breadcrumbs
           items={[
             { label: "Home", href: "/" },
             { label: "Glossary", href: "/glossary" },
           ]}
         />
+        <PageHeader
+          title="Glossary of Technical Tags"
+          description="Consult the meaning of the technical tags used for prompt analysis."
+        />
         <Card className="shadow-xl">
-          <CardHeader className="text-center">
-            <div className="flex justify-center items-center mb-3">
-              <BookMarked className="h-10 w-10 text-primary" />
-            </div>
-            <CardTitle className="text-3xl font-bold">
-              Glossary of Technical Tags
-            </CardTitle>
-            <CardDescription className="text-lg">
-              Understand the key terms used in prompt analysis.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="py-4">
             {categories.length === 0 ? (
               <p className="text-muted-foreground text-center">
                 The glossary of tags is empty.
