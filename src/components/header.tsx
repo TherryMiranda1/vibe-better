@@ -5,9 +5,20 @@ import { Button } from "./ui/button";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { useUser } from "@/hooks/useUser";
-import { useAuth } from "@clerk/nextjs";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetTitle,
+  SheetTrigger,
+} from "./ui/sheet";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  useAuth,
+} from "@clerk/nextjs";
 
 const DynamicHeaderActions = dynamic(() => import("./header-actions"), {
   ssr: false,
@@ -30,8 +41,13 @@ export function AppHeader() {
   const navigationLinks = [
     { href: "/prompts", label: "Prompts" },
     { href: "/glossary", label: "Tags" },
-    { href: "/pricing", label: "Prices" },
-    ...(userId ? [{ href: "/organizations", label: "Organizations" }] : []),
+    { href: "/pricing", label: "Pricing" },
+    ...(userId
+      ? [
+          { href: "/my-analysis", label: "My Analysis" },
+          { href: "/organizations", label: "Organizations" },
+        ]
+      : []),
   ];
 
   return (
@@ -77,9 +93,12 @@ export function AppHeader() {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[240px] sm:w-[300px]">
+            <SheetContent
+              side="right"
+              className="w-[240px] sm:w-[300px] flex flex-col space-between"
+            >
               <SheetTitle>Menu</SheetTitle>
-              <nav className="flex flex-col space-y-4 mt-8">
+              <nav className="flex flex-col space-y-4 mt-8 h-full">
                 {navigationLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -97,6 +116,32 @@ export function AppHeader() {
                   </Link>
                 ))}
               </nav>
+              <SignedIn>
+                <SheetFooter>
+                  <SignOutButton>
+                    <Button
+                      size="default"
+                      variant="outline"
+                      className="border-primary/30  hover:bg-primary/5 text-primary hover:text-[var(--color-primary-dark)] rounded-xl"
+                    >
+                      Sign Out
+                    </Button>
+                  </SignOutButton>
+                </SheetFooter>
+              </SignedIn>
+              <SignedOut>
+                <SheetFooter>
+                  <SignInButton>
+                    <Button
+                      size="default"
+                      variant="outline"
+                      className="border-primary/30 hover:bg-primary/5 text-primary hover:text-[var(--color-primary-dark)] rounded-xl"
+                    >
+                      Sign In
+                    </Button>
+                  </SignInButton>
+                </SheetFooter>
+              </SignedOut>
             </SheetContent>
           </Sheet>
         </div>

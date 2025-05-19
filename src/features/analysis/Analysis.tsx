@@ -9,7 +9,6 @@ import {
 } from "@/types/prompt-engineering";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Accordion,
   AccordionItem,
@@ -42,6 +41,7 @@ import {
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { getUserCredits } from "@/lib/services/client/userCredits.service";
+import { saveAnalysis as saveAnalysisToDb } from "@/lib/services/client/analysis.service";
 import useUserStore from "@/context/store";
 import AnalysisSection from "@/components/analysis-section";
 
@@ -360,7 +360,7 @@ const Analysis = () => {
       }, 100);
     };
 
-    es.addEventListener("close", (event) => {
+    es.addEventListener("close", async (event) => {
       if (streamTerminatedHandledRef.current) {
         if (eventSourceRef.current) {
           eventSourceRef.current.close();
@@ -370,41 +370,63 @@ const Analysis = () => {
       }
       streamTerminatedHandledRef.current = true;
 
-      const currentResultsForHistory: Record<string, string | undefined> = {};
-      let allMandatoryDoneForHistory = true;
+      // Get the current analysis results directly from state
+      // This ensures we have the most up-to-date values
+      const resultsToSave: Record<string, string | undefined> = {};
+      let allMandatoryComplete = true;
+      
+      // Check for mandatory sections and populate results to save
+      analysisOrder.forEach((key) => {
+        if (activeAnalyses.has(key) && analysisResults[key]?.content) {
+          resultsToSave[key] = analysisResults[key].content;
+        } else if (mandatoryKeys.has(key) && activeAnalyses.has(key) && !analysisResults[key]?.content) {
+          allMandatoryComplete = false;
+        }
+      });
 
+      // Update the UI state
       setAnalysisResults((currentResults) => {
         const finalState = { ...currentResults };
 
-        mandatoryKeys.forEach((mKey) => {
-          if (!finalState[mKey]?.content && activeAnalyses.has(mKey)) {
-            allMandatoryDoneForHistory = false;
-          }
-        });
-
         (Array.from(activeAnalyses) as AnalysisSectionKey[]).forEach((key) => {
-          if (finalState[key] && finalState[key].content) {
-            currentResultsForHistory[key] = finalState[key].content;
-          }
           finalState[key].isLoading = false;
           if (!finalState[key].content && key !== "score") {
             finalState[key].content = "Análisis no completado o sin datos.";
           }
         });
 
-        if (activeAnalyses.has("score") && finalState.score?.content) {
-          currentResultsForHistory["score"] = finalState.score.content;
-        } else if (activeAnalyses.has("score") && !finalState.score?.content) {
-          allMandatoryDoneForHistory = false;
-        }
-
         return finalState;
       });
 
-      if (allMandatoryDoneForHistory && promptText.trim()) {
-        saveToHistory(promptText, activeAnalyses, currentResultsForHistory);
+      if (allMandatoryComplete && promptText.trim()) {
+        // Save to local history
+        saveToHistory(promptText, activeAnalyses, resultsToSave);
+
+        // Save analysis to database if user is authenticated
+        console.log({
+          prompt: promptText,
+          activeAnalyses: Array.from(activeAnalyses),
+          resultsContent: resultsToSave,
+          analysisResults,
+        });
+        
+        try {
+          await saveAnalysisToDb({
+            prompt: promptText,
+            activeAnalyses: Array.from(activeAnalyses),
+            resultsContent: resultsToSave,
+            title: `Analysis ${new Date().toLocaleString()}`,
+          });
+        } catch (error) {
+          console.error("Error saving analysis to database:", error);
+          toast({
+            title: "Error al guardar",
+            description: "No se pudo guardar el análisis en la base de datos.",
+            variant: "destructive",
+          });
+        }
       } else if (
-        !allMandatoryDoneForHistory &&
+        !allMandatoryComplete &&
         !hasSavedThisStreamRef.current
       ) {
         if (promptText.trim()) {
@@ -463,7 +485,10 @@ const Analysis = () => {
       <section className="w-full relative mb-4 flex flex-col gap-4">
         <div>
           <form onSubmit={handleOptimizePrompt} className="space-y-6">
-            <div className="space-y-2 relative">
+            <div className="relative">
+              <div className="absolute top-1 right-1 text-xs text-muted-foreground opacity-50">
+                {promptText.length} / 10000
+              </div>
               <Textarea
                 placeholder="Enter your prompt and we will optimize it for you. Ej: I want to create a React component to display a list of users with pagination and filters..."
                 value={promptText}
@@ -473,10 +498,8 @@ const Analysis = () => {
                 disabled={isAnalyzing}
                 maxLength={10000}
               />
-              <div className="text-xs text-muted-foreground text-right pr-1">
-                {promptText.length} / 10000
-              </div>
-              <Accordion type="single" collapsible className="w-full mb-2 ">
+
+              <Accordion type="single" collapsible className="w-full mt-4 ">
                 <AccordionItem value="advanced-mode">
                   <AccordionTrigger className="w-full flex items-center justify-between rounded-xl px-4 py-2 hover:bg-muted text-muted-foreground">
                     <span className="font-semibold text-sm">Advanced mode</span>

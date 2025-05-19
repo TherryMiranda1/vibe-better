@@ -5,6 +5,7 @@ import {
   SlidersHorizontal,
   FilePenLine,
   Award,
+  ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 
@@ -50,6 +51,12 @@ export const analysisConfig = createAnalysisConfig({
     instruction:
       'Assign a score from 0 to 100 evaluating the clarity, specificity, completeness, and effective use of technical tags/concepts from the original prompt, considering its apparent complexity. Briefly justify the score. Your response format MUST be "SCORE/100: Concise justification." Example: "85/100: The prompt is clear and specific, but could benefit from more detail on X. In the prompt Language"',
   },
+  nextSteps: {
+    title: "Next Steps",
+    Icon: ArrowRight,
+    instruction:
+      'Based on the prompt and previous analyses, provide a structured list of next implementation steps. For each step include: a clear title, detailed description, priority level (high/medium/low), estimated effort, and any technical considerations. Focus on actionable, specific tasks that will move the implementation forward. Format the response as a JSON object following the StructuredNextStepsResult type.',
+  },
 });
 
 // Order matters for API processing if one depends on another
@@ -57,7 +64,7 @@ export const analysisOrder: AnalysisSectionKey[] = [
   "complexity",
   "dependencies",
   "features",
-  // 'recommendations', // Removed
   "suggestedPrompt",
+  "nextSteps",
   "score",
 ];

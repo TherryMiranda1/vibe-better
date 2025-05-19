@@ -10,7 +10,7 @@ export type AnalysisSectionKey =
   | "complexity"
   | "dependencies"
   | "features"
-  // | 'recommendations' // Removed
+  | "nextSteps"
   | "suggestedPrompt"
   | "score";
 
@@ -73,6 +73,17 @@ export interface HistoryEntry {
   timestamp: number;
   activeAnalyses: AnalysisSectionKey[];
   resultsContent: Record<string, string | undefined>;
+}
+
+export interface StructuredNextStepsResult {
+  steps: Array<{
+    title: string;
+    description: string;
+    priority: 'high' | 'medium' | 'low';
+    estimatedEffort?: string;
+    technicalConsiderations?: string[];
+  }>;
+  usage?: TokenUsage;
 }
 
 export interface TechnicalTag {

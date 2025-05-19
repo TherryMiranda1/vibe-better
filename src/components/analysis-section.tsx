@@ -13,6 +13,7 @@ import type {
   StructuredSuggestedPromptResult,
   TokenUsage,
   TechnicalTag,
+  StructuredNextStepsResult,
 } from "@/types/analysis";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ import {
   CheckCircle2,
   XCircle,
   Info,
+  ListChecks, // For Next Steps
 } from "lucide-react";
 import { technicalTags } from "@/config/technical-tags";
 import {
@@ -341,12 +343,17 @@ export default function AnalysisSection({
     if (!content) {
       return (
         <p className="text-sm text-muted-foreground mt-2">
-          Análisis no disponible o pendiente.
+          Analysis not available or pending.
         </p>
       );
     }
 
-    if (contentIsErrorFlag) {
+    if (
+      !["nextSteps", "complexity", "suggestedPrompt", "score"].includes(
+        itemKey
+      ) &&
+      contentIsErrorFlag
+    ) {
       let errorMessage = content;
       if (content.trim().startsWith("{") && content.trim().endsWith("}")) {
         try {
@@ -547,9 +554,7 @@ export default function AnalysisSection({
           <div className="mt-2 p-3 max-w-2xl border border-amber-500/50 rounded-md bg-amber-500/10 text-sm text-amber-700 dark:text-amber-400 flex items-start">
             <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
             <div>
-              <p className="font-semibold">
-                Unrecognized Dependencies Format
-              </p>
+              <p className="font-semibold">Unrecognized Dependencies Format</p>
               <p className="text-xs mt-1">
                 The dependencies are displayed as unformatted text.
               </p>
@@ -596,9 +601,7 @@ export default function AnalysisSection({
           <div className="mt-2 p-3 border border-amber-500/50 max-w-2xl rounded-md bg-amber-500/10 text-sm text-amber-700 dark:text-amber-400 flex items-start">
             <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
             <div>
-              <p className="font-semibold">
-                Unrecognized Features Format
-              </p>
+              <p className="font-semibold">Unrecognized Features Format</p>
               <p className="text-xs mt-1">
                 The features are displayed as unformatted text.
               </p>
@@ -629,6 +632,126 @@ export default function AnalysisSection({
           ))}
         </ul>
       );
+    }
+
+    if (itemKey === "nextSteps") {
+      try {
+        const parsedData = JSON.parse(content) as any; // Parse as any first to check for error
+
+        if (parsedData && parsedData.error) {
+          return (
+            <div className="mt-2 p-3 border border-destructive/50 rounded-md bg-destructive/10 text-sm text-destructive flex items-start">
+              <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
+              <div>
+                <p className="font-semibold">Error in Next Steps Analysis</p>
+                <p className="text-xs mt-1">
+                  {typeof parsedData.error === "string"
+                    ? parsedData.error
+                    : JSON.stringify(parsedData.error)}
+                </p>
+                {parsedData.details && (
+                  <pre className="mt-2 text-xs whitespace-pre-wrap bg-background/50 p-2 rounded">
+                    {parsedData.details}
+                  </pre>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        const nextStepsData = parsedData as StructuredNextStepsResult;
+        if (
+          !nextStepsData ||
+          !nextStepsData.steps ||
+          nextStepsData.steps.length === 0
+        ) {
+          return (
+            <p className="text-sm text-muted-foreground mt-2">
+              No next steps were identified or the data format was unexpected.
+            </p>
+          );
+        }
+
+        const getPriorityBadgeClass = (priority: "high" | "medium" | "low") => {
+          switch (priority.toLowerCase()) {
+            case "high":
+              return "bg-card text-red-700 hover:bg-red-200";
+            case "medium":
+              return "bg-card text-yellow-700 hover:bg-yellow-200";
+            case "low":
+              return "bg-card text-green-700 hover:bg-green-200";
+            default:
+              return "bg-card text-gray-700 hover:bg-gray-200";
+          }
+        };
+
+        return (
+          <div className="mt-3 space-y-4">
+            {nextStepsData.steps.map((step, index) => (
+              <div key={index} className="p-4 border rounded-lg bg-muted/30">
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className="font-semibold text-md text-primary flex items-center">
+                    <ListChecks className="w-5 h-5 mr-2 flex-shrink-0" />
+                    {step.title}
+                  </h4>
+                  <Badge
+                    variant="outline"
+                    className={`text-xs font-medium px-2 py-0.5 rounded-full ${getPriorityBadgeClass(step.priority)}`}
+                  >
+                    Priority:{" "}
+                    {step.priority.charAt(0).toUpperCase() +
+                      step.priority.slice(1)}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mb-2 ml-7 leading-relaxed">
+                  {step.description}
+                </p>
+                {step.estimatedEffort && (
+                  <p className="text-xs text-muted-foreground mb-1 ml-7">
+                    <strong>Estimated Effort:</strong> {step.estimatedEffort}
+                  </p>
+                )}
+                {step.technicalConsiderations &&
+                  step.technicalConsiderations.length > 0 && (
+                    <div className="ml-7 mt-2">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">
+                        Technical Considerations:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1">
+                        {step.technicalConsiderations.map(
+                          (consideration, cIndex) => (
+                            <li
+                              key={cIndex}
+                              className="text-xs text-muted-foreground"
+                            >
+                              {consideration}
+                            </li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+              </div>
+            ))}
+          </div>
+        );
+      } catch (error) {
+        console.error("Error parsing nextSteps content:", error);
+        return (
+          <div className="mt-2 p-3 border border-destructive/50 rounded-md bg-destructive/10 text-sm text-destructive flex items-start">
+            <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
+            <div>
+              <p className="font-semibold">Error Displaying Next Steps</p>
+              <p className="text-xs mt-1">
+                The next steps data could not be parsed. Raw content below:
+              </p>
+              <pre className="mt-2 text-xs whitespace-pre-wrap bg-background/50 p-2 rounded">
+                {content}
+              </pre>
+            </div>
+          </div>
+        );
+      }
     }
 
     // Fallback for any itemKey not explicitly handled above (e.g., if 'recommendations' was still active)
@@ -716,7 +839,9 @@ export default function AnalysisSection({
                 <label className="font-semibold text-sm border border-primary rounded-full px-2 py-1">
                   {activeGlossaryTag.category}
                 </label>
-                <span className="block pt-4">{activeGlossaryTag.description}</span>
+                <span className="block pt-4">
+                  {activeGlossaryTag.description}
+                </span>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

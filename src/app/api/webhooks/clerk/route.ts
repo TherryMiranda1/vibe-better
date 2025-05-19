@@ -6,6 +6,11 @@ import {
   deleteUser,
   updateUser,
 } from "@/lib/services/user.service";
+import {
+  createOrganization,
+  deleteOrganization,
+  updateOrganization,
+} from "@/lib/services/organization.service";
 import { userCreditsService } from "@/lib/services/server/db/userCredits.service";
 import { logger } from "@/lib/logger/Logger";
 
@@ -55,6 +60,7 @@ export async function POST(req: Request) {
 
   try {
     switch (eventType) {
+      // User events
       case "user.created": {
         const { id, email_addresses, first_name, last_name, image_url } =
           evt.data;
@@ -91,6 +97,7 @@ export async function POST(req: Request) {
         };
 
         await updateUser(id, userData);
+        logger.info(`Usuario actualizado con ID ${id}`);
         break;
       }
 
@@ -101,6 +108,48 @@ export async function POST(req: Request) {
         }
 
         await deleteUser(id);
+        logger.info(`Usuario eliminado con ID ${id}`);
+        break;
+      }
+
+      // Organization events
+      case "organization.created": {
+        const { id, name, slug, image_url } = evt.data;
+
+        const organizationData = {
+          clerkId: id,
+          name,
+          slug: slug || undefined,
+          imageUrl: image_url || undefined,
+        };
+
+        const newOrganization = await createOrganization(organizationData);
+        logger.info(`Organización creada con ID ${newOrganization.id}`);
+        break;
+      }
+
+      case "organization.updated": {
+        const { id, name, slug, image_url } = evt.data;
+
+        const organizationData = {
+          name,
+          slug: slug || undefined,
+          imageUrl: image_url || undefined,
+        };
+
+        await updateOrganization(id, organizationData);
+        logger.info(`Organización actualizada con ID ${id}`);
+        break;
+      }
+
+      case "organization.deleted": {
+        if (!id) {
+          console.error("Organization ID is missing");
+          return new Response("Organization ID is missing", { status: 400 });
+        }
+
+        await deleteOrganization(id);
+        logger.info(`Organización eliminada con ID ${id}`);
         break;
       }
 

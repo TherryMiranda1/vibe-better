@@ -9,6 +9,7 @@ import type { PromptEngineeringMode } from "@/types/prompt-engineering";
 import { evaluateComplexity } from "@/ai/flows/evaluate-complexity-flow";
 import { generateSuggestedPromptWithLinkedTags } from "@/ai/flows/generate-suggested-prompt-flow";
 import { scorePrompt } from "@/ai/flows/score-prompt";
+import { generateNextSteps } from "@/ai/flows/generate-next-steps-flow";
 import { userCreditsService } from "@/lib/services/server/db/userCredits.service";
 import { getCurrentUser } from "@/lib/auth";
 import { logger } from "@/lib/logger/Logger";
@@ -122,6 +123,9 @@ export async function GET(request: NextRequest) {
                 } else if (key === "score") {
                   const scoreResult = await scorePrompt({ prompt: userPrompt });
                   payloadString = JSON.stringify(scoreResult);
+                } else if (key === "nextSteps") {
+                  const nextStepsResult = await generateNextSteps({ prompt: userPrompt });
+                  payloadString = JSON.stringify(nextStepsResult);
                 } else {
                   // Generic cases: dependencies, features
                   const { text, usage } = await ai.generate({
