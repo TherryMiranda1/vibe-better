@@ -358,19 +358,6 @@ export default function LandingSections() {
           </Button>
         </div>
       </section>
-
-      <footer className="py-8 border-t border-border text-center bg-card">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Vibe Code Better. All rights
-            reserved.
-            <br />
-            <Link href="/" className="hover:text-primary">
-              Go to Analyzer
-            </Link>
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
