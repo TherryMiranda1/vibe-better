@@ -130,13 +130,13 @@ Prompt Original del Usuario:
 
 Ahora, proporciona las dos versiones del prompt mejorado en ESPAÑOL, basadas en el prompt original de arriba:
 
-1.  **Prompt Sugerido Conciso (en ESPAÑOL)**:
-    Reescribe el prompt original para que sea más claro, específico y directamente accionable. Enfócate en la concisión.
-    Al generar esta versión concisa, considera activamente qué atributos del Glosario Técnico mejorarían la solicitud original e incorpóralos estratégicamente donde sea apropiado para añadir claridad y especificar expectativas de calidad. El objetivo es producir un prompt que, si fuera evaluado por un sistema de puntuación de prompts (0-100 basado en claridad, especificidad y uso efectivo de tags), obtendría una alta puntuación. Quizás reflejando sutilmente la complejidad (por ejemplo, incluyendo más tags técnicos si la tarea es compleja y se beneficiaría de ellos).
+1.  **Prompt Sugerido Conciso (en el idioma del prompt)**:
+    Mejora el prompt original para que sea más efectivo, específico y directamente accionable. Enfócate en obtener los mejores resultados.
+    Al generar esta versión concisa, considera activamente qué atributos del Glosario Técnico mejorarían la solicitud original e incorpóralos estratégicamente donde sea apropiado para añadir claridad y especificar expectativas de calidad. El objetivo es producir un prompt que, si fuera evaluado por un sistema de puntuación de prompts (0-100 basado en su probabilidad de exito, especificidad y uso efectivo de tags), obtendría una alta puntuación. Quizás reflejando sutilmente la complejidad (por ejemplo, incluyendo más tags técnicos si la tarea es compleja y se beneficiaría de ellos).
     Si utilizas un término en este prompt conciso que corresponda directamente a un 'nombre' del Glosario Técnico (o una variación muy cercana que mantenga el mismo significado), DEBES formatear ese término como un enlace Markdown: \`[ElTérminoComoSeUsa](glossary://el_id_del_tag)\`. Por ejemplo, si 'diseño adaptable' (id: 'responsive') es relevante y se usa, escríbelo como \`[diseño adaptable](glossary://responsive)\`.
 
-2.  **Prompt Sugerido Elaborado (en ESPAÑOL)**:
-    Crea una versión altamente detallada y cuidadosamente elaborada del prompt siguiendo principios profesionales de ingeniería de prompts. Esta versión debe estar estructurada en secciones claras usando encabezados Markdown:
+2.  **Prompt Sugerido Elaborado (en el idioma del prompt)**:
+    Crea una versión altamente detallada y cuidadosamente elaborada del prompt siguiendo principios profesionales de ingeniería de prompts. Esta versión debe estar estructurada en secciones claras y ser analizada detalladamente para buscar la máxima efectividad, puedes usar Markdown:
     # 1. Contexto / Rol
     (Define al modelo quién es y cuál es su objetivo)
     # 2. Tarea específica
