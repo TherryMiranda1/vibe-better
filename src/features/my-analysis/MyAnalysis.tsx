@@ -28,16 +28,13 @@ import {
   Trash2,
   ArrowLeft,
   ExternalLink,
-  AlertTriangle,
-  Package,
-  ChevronRight,
   PencilLine,
   ListChecks,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { ScoreDisplay } from "@/components/score-display";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
@@ -187,14 +184,14 @@ const MyAnalysis = () => {
                   <CardDescription>
                     {formatDistanceToNow(new Date(analysis.createdAt), {
                       addSuffix: true,
-                      locale: es,
+                      locale: enUS,
                     })}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6">
                   <div className="mb-4">
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                      Prompt original:
+                      Original prompt:
                     </h3>
                     <div className="bg-muted p-4 rounded-md text-sm whitespace-pre-wrap">
                       {analysis.prompt}
