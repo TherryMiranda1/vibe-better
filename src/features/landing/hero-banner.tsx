@@ -1,6 +1,6 @@
 // src/components/landing/hero-banner.tsx
 "use client";
-
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 
 const defaultAnimatedWords = ["Prompts", "Hours", "Dollars"];
@@ -18,7 +18,7 @@ interface HeroBannerProps {
 }
 
 export function HeroBanner({
-  tagline = "",
+  tagline = "Powered by Clerk",
   titlePrefix = "Save hundreds of ",
   animatedWords = defaultAnimatedWords,
   descriptionText = "Refine your prompts, generate flawless code with AI in seconds. Turn clear ideas into real results and boost your productivity.",
@@ -82,11 +82,16 @@ export function HeroBanner({
   return (
     <div className="py-16 mx-auto text-center relative z-10">
       {tagline && (
-        <div className="inline-block bg-primary/20 text-primary px-4 py-1 rounded-full text-sm font-medium mb-6 shadow-md">
+        <Link
+          href="https://clerk.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-primary/20 text-primary px-4 py-1 rounded-full text-sm font-medium mb-6 shadow-md"
+        >
           {tagline}
-        </div>
+        </Link>
       )}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 mt-12 text-center">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 mt-6 text-center">
         {titlePrefix}{" "}
         <span className="block text-primary min-w-[180px] sm:min-w-[250px] md:min-w-[320px] text-center">
           {currentText}

@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   promptEngineeringModes,
@@ -23,10 +23,8 @@ import {
 } from "@/config/analysis-config";
 import type {
   AnalysisSections,
-  AnalysisSectionKey,
-  HistoryEntry,
-  AnalysisUpdateEvent,
-  TokenUsage,
+  AnalysisSectionKey, AnalysisUpdateEvent,
+  TokenUsage
 } from "@/types/analysis";
 import { Loader2, Settings, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -38,7 +36,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { getUserCredits } from "@/lib/services/client/userCredits.service";
 import { saveAnalysis as saveAnalysisToDb } from "@/lib/services/client/analysis.service";
@@ -285,7 +282,8 @@ const Analysis = () => {
         if (!streamTerminatedHandledRef.current) {
           toast({
             title: "Error processing analysis data",
-            description: "An error occurred while processing the analysis data.",
+            description:
+              "An error occurred while processing the analysis data.",
             variant: "destructive",
           });
         }
@@ -380,7 +378,7 @@ const Analysis = () => {
         resultsToSave["score"] = "";
       }
 
-      console.log({allMandatoryComplete, promptText})
+      console.log({ allMandatoryComplete, promptText });
 
       if (allMandatoryComplete && promptText.trim()) {
         try {
@@ -452,7 +450,7 @@ const Analysis = () => {
 
   return (
     <div className="flex z-20 flex-col max-w-2xl w-full items-center mx-auto text-left">
-      <section className="w-full relative mb-4 flex flex-col gap-4">
+      <section id="analyze" className="w-full relative mb-4 flex flex-col gap-4">
         <div>
           <form onSubmit={handleOptimizePrompt} className="space-y-6">
             <div className="relative">
@@ -464,7 +462,7 @@ const Analysis = () => {
                 value={promptText}
                 rows={6}
                 onChange={(e) => setPromptText(e.target.value)}
-                className="p-4 rounded-xl bg-card text-foreground placeholder:text-muted-foreground placeholder:text-xs border-primary/20"
+                className="p-4 rounded-xl bg-card text-foreground shadow-primary placeholder:text-muted-foreground placeholder:text-xs border-primary/20"
                 disabled={isAnalyzing}
                 maxLength={10000}
               />
@@ -601,7 +599,7 @@ const Analysis = () => {
                       className="w-full"
                       disabled={isAnalyzing}
                     >
-                      Aplicar
+                      Apply
                     </Button>
                   </div>
                 </DropdownMenuContent>

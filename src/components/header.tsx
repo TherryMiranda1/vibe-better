@@ -42,10 +42,11 @@ export function AppHeader() {
     { href: "/prompts", label: "Prompts" },
     { href: "/glossary", label: "Tags" },
     { href: "/pricing", label: "Pricing" },
+    { href: "/prompt-guide", label: "Prompting" },
     ...(userId
       ? [
-          { href: "/my-analysis", label: "My Analysis" },
-          { href: "/organizations", label: "Organizations" },
+          { href: "/my-analysis", label: "My Analyses" },
+          { href: "/organizations", label: "Orgs" },
         ]
       : []),
   ];
@@ -68,7 +69,7 @@ export function AppHeader() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="ml-auto hidden md:flex items-center justify-center space-x-4">
+        <nav className="ml-auto hidden md:flex items-center justify-center space-x-2">
           {navigationLinks.map((link) => (
             <Link key={link.href} href={link.href}>
               <Button

@@ -51,7 +51,7 @@ export default function PricingCard({ product, price }: PricingCardProps) {
       if (result.error) {
         console.error("Error creating checkout session:", result.error);
         alert(
-          "Hubo un error al procesar tu compra. Por favor, inténtalo de nuevo."
+          "There was an error processing your purchase. Please try again."
         );
       } else {
         // Redirect to Stripe Checkout
@@ -70,7 +70,7 @@ export default function PricingCard({ product, price }: PricingCardProps) {
     } catch (error) {
       console.error("Error in checkout process:", error);
       alert(
-        "Hubo un error al procesar tu compra. Por favor, inténtalo de nuevo."
+        "There was an error processing your purchase. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -89,7 +89,7 @@ export default function PricingCard({ product, price }: PricingCardProps) {
       {isFeatured && (
         <div className="absolute top-0 right-0 bg-primary text-black px-4 py-1 rounded-bl-lg text-sm font-medium flex items-center">
           <Sparkles className="h-4 w-4 mr-1" />
-          Recomendado
+          Recommended
         </div>
       )}
 
@@ -105,7 +105,7 @@ export default function PricingCard({ product, price }: PricingCardProps) {
             <span className="text-muted-foreground ml-2">
               /{price.interval}
               {price.interval_count && price.interval_count > 1
-                ? ` (${price.interval_count} meses)`
+                ? ` (${price.interval_count} months)`
                 : ""}
             </span>
           )}
@@ -116,10 +116,10 @@ export default function PricingCard({ product, price }: PricingCardProps) {
             <span className="text-3xl font-bold text-foreground">
               {credits}
             </span>
-            <span className="ml-2 text-muted-foreground">créditos</span>
+            <span className="ml-2 text-muted-foreground">credits</span>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            {price.description || "Para analizar y optimizar tus prompts"}
+            {price.description || "To analyze and optimize your prompts"}
           </p>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function PricingCard({ product, price }: PricingCardProps) {
             <div className="h-5 w-5 border-2 border-foreground border-t-transparent rounded-full animate-spin"></div>
           ) : (
             <>
-              Comprar ahora
+              Buy now
               <ArrowRight className="ml-2 h-4 w-4" />
             </>
           )}

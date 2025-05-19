@@ -76,6 +76,7 @@
 * {
   scrollbar-width: thin; /* Opciones: auto | thin | none */
   scrollbar-color: hsl(var(--secondary)) hsl(var(--background)); /* Primer color: thumb, Segundo color: track */
+  scroll-behavior: smooth;
 }
 
 button[disabled] {
