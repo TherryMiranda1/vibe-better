@@ -48,7 +48,7 @@ const evaluateComplexityPrompt = ai.definePrompt({
   output: {schema: EvaluateComplexityLLMOutputSchema}, // LLM generates this structure
   prompt: `Eres un asistente de IA especializado en evaluar la complejidad de tareas de codificación basándote en un sistema de puntuación detallado.
 Tu salida DEBE ser un objeto JSON que se adhiera al esquema de salida definido. NO incluyas el campo 'usage' en tu respuesta JSON, eso se gestionará aparte.
-Responde siempre en el idioma del prompt.
+Tu salida DEBE ser en el idioma de {{{prompt}}}
 
 Primero, evalúa el prompt contra las siguientes tres dimensiones, cada una en una escala de 1-5 puntos:
 
