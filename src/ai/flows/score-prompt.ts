@@ -50,7 +50,8 @@ const scorePromptPrompt = ai.definePrompt({
   output: {schema: ScorePromptLLMOutputSchema}, // LLM generates this
   prompt: `Eres un experto en calificar prompts de IA. Recibirás un prompt y asignarás una puntuación del 0 al 100 basada en la claridad, especificidad y efectividad del prompt.
 Tu salida DEBE ser un objeto JSON que se adhiera al esquema de salida definido (score, explanation). NO incluyas el campo 'usage' en tu respuesta JSON.
-Tu salida DEBE ser en el idioma de {{{prompt}}}
+DEBES detectar en que idioma esta el {{{prompt}}} original y Tu salida DEBE ser en el idioma`
+
 
 Al asignar la puntuación, considera la efectividad del prompt *en relación a su complejidad aparente*.
 - Un buen prompt para una tarea **sencilla** debe ser claro y directo.
