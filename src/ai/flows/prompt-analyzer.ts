@@ -59,7 +59,7 @@ const analyzePromptFlow = ai.defineFlow(
       'Mejora este prompt agregando los elementos sugeridos'
     );
     const score = await getAnalysis(
-      'Asigna una puntuación del 0 al 100 según su buena elaboración, claridad y efectividad. Responde siempre en el idioma original del prompt.'
+      `Asigna una puntuación del 0 al 100 según su buena elaboración, claridad y efectividad. Tu salida DEBE ser en el idioma de {{{prompt}}}`
     );
 
     return {
