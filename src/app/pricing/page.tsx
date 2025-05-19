@@ -7,8 +7,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Pricing | Vibe Code Better",
-  description:
-    "Credit packages to improve and optimize your prompts for LLMs",
+  description: "Credit packages to improve and optimize your prompts for LLMs",
 };
 
 export default async function PricingPage() {
@@ -25,7 +24,9 @@ export default async function PricingPage() {
               Plans for organizations
             </h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Choose the credit package that best fits your needs to optimize your prompts and achieve outstanding results. Invite as many members as you want from your organization.
+              Choose the credit package that best fits your needs to optimize
+              your prompts and achieve outstanding results. Invite as many
+              members as you want from your organization.
             </p>
             {!orgId && (
               <Link
@@ -41,11 +42,10 @@ export default async function PricingPage() {
       </section>
       <div className="w-full max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold tracking-tight">
-            Credit Packages
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight">Credit Packages</h1>
           <p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto">
-            Choose the credit package that best fits your needs to optimize your prompts and achieve outstanding results.
+            Choose the credit package that best fits your needs to optimize your
+            prompts and achieve outstanding results.
           </p>
         </div>
 

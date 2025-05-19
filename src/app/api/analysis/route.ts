@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { saveAnalysis, getAnalysesByUserId } from "@/lib/services/analysis.service";
+import {
+  saveAnalysis,
+  getAnalysesByUserId,
+} from "@/lib/services/analysis.service";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
-    
+
     if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -22,8 +22,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    console.log({ body });
 
     const analysis = await saveAnalysis({
       userId: user.id,
@@ -46,16 +44,13 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();
-    
+
     if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const analyses = await getAnalysesByUserId(user.id);
-    
+
     return NextResponse.json(analyses);
   } catch (error: any) {
     console.error("Error fetching analyses:", error);

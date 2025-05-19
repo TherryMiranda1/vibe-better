@@ -86,10 +86,6 @@ const Analysis = () => {
   const [isPromptEngineeringMenuOpen, setIsPromptEngineeringMenuOpen] =
     useState(false);
 
-  const [history, setHistory] = useLocalStorage<HistoryEntry[]>(
-    "analysisHistory",
-    []
-  );
   const [totalTokenUsage, setTotalTokenUsage] = useState<TokenUsage>({
     inputTokens: 0,
     outputTokens: 0,
@@ -126,30 +122,6 @@ const Analysis = () => {
       }
     }
   }, [searchParams, router]);
-
-  const saveToHistory = useCallback(
-    (
-      currentPromptText: string,
-      currentActiveAnalyses: Set<AnalysisSectionKey>,
-      currentResultsToStore: Record<string, string | undefined>
-    ) => {
-      if (!currentPromptText.trim() || hasSavedThisStreamRef.current) return;
-
-      const newEntry: HistoryEntry = {
-        id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-        prompt: currentPromptText,
-        timestamp: Date.now(),
-        activeAnalyses: Array.from(currentActiveAnalyses),
-        resultsContent: currentResultsToStore,
-      };
-
-      setHistory((prevHistory) =>
-        [newEntry, ...prevHistory].slice(0, MAX_HISTORY_ENTRIES)
-      );
-      hasSavedThisStreamRef.current = true;
-    },
-    [setHistory]
-  );
 
   const updateUser = async () => {
     const userCredits = await getUserCredits();
@@ -374,12 +346,16 @@ const Analysis = () => {
       // This ensures we have the most up-to-date values
       const resultsToSave: Record<string, string | undefined> = {};
       let allMandatoryComplete = true;
-      
+
       // Check for mandatory sections and populate results to save
       analysisOrder.forEach((key) => {
         if (activeAnalyses.has(key) && analysisResults[key]?.content) {
           resultsToSave[key] = analysisResults[key].content;
-        } else if (mandatoryKeys.has(key) && activeAnalyses.has(key) && !analysisResults[key]?.content) {
+        } else if (
+          mandatoryKeys.has(key) &&
+          activeAnalyses.has(key) &&
+          !analysisResults[key]?.content
+        ) {
           allMandatoryComplete = false;
         }
       });
@@ -399,17 +375,6 @@ const Analysis = () => {
       });
 
       if (allMandatoryComplete && promptText.trim()) {
-        // Save to local history
-        saveToHistory(promptText, activeAnalyses, resultsToSave);
-
-        // Save analysis to database if user is authenticated
-        console.log({
-          prompt: promptText,
-          activeAnalyses: Array.from(activeAnalyses),
-          resultsContent: resultsToSave,
-          analysisResults,
-        });
-        
         try {
           await saveAnalysisToDb({
             prompt: promptText,
@@ -425,10 +390,7 @@ const Analysis = () => {
             variant: "destructive",
           });
         }
-      } else if (
-        !allMandatoryComplete &&
-        !hasSavedThisStreamRef.current
-      ) {
+      } else if (!allMandatoryComplete && !hasSavedThisStreamRef.current) {
         if (promptText.trim()) {
           toast({
             title: "Análisis Incompleto",

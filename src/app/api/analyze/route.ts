@@ -14,6 +14,7 @@ import { userCreditsService } from "@/lib/services/server/db/userCredits.service
 import { getCurrentUser } from "@/lib/auth";
 import { logger } from "@/lib/logger/Logger";
 import { NextRequest } from "next/server";
+import { getUserSubscriptionInfo } from "@/lib/services/server/userSubscription.service";
 
 export const dynamic = "force-dynamic"; // Ensures the route is not statically cached
 
@@ -52,9 +53,19 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const credits = await userCreditsService.getUserCredits(user.id);
+  // Check if the user has an active subscription
+  const unlimitedPlan = await getUserSubscriptionInfo();
 
-  if (credits < operationCost) {
+  // Check if user has unlimited plan (Plan User)
+  const hasUnlimitedPlan = unlimitedPlan.plan !== null;
+  console.log({ unlimitedPlan, hasUnlimitedPlan });
+  // If the user has no active subscription, check their organization's credits
+  const credits = hasUnlimitedPlan
+    ? Infinity
+    : await userCreditsService.getUserCredits(user.id);
+
+  // Skip credit check for users with unlimited plan
+  if (!hasUnlimitedPlan && credits < operationCost) {
     logger.error("Not enough credits");
     return new Response(JSON.stringify({ error: "Not enough credits" }), {
       status: 400,
@@ -79,8 +90,7 @@ export async function GET(request: NextRequest) {
     : analysisOrder;
 
   const isPreflight = request.headers.get("Accept") === "application/json";
-  if (!isPreflight) {
-    console.log({ isPreflight });
+  if (!isPreflight && !hasUnlimitedPlan) {
     await userCreditsService.deductUserCredits(user.id, operationCost);
   }
 
@@ -124,7 +134,9 @@ export async function GET(request: NextRequest) {
                   const scoreResult = await scorePrompt({ prompt: userPrompt });
                   payloadString = JSON.stringify(scoreResult);
                 } else if (key === "nextSteps") {
-                  const nextStepsResult = await generateNextSteps({ prompt: userPrompt });
+                  const nextStepsResult = await generateNextSteps({
+                    prompt: userPrompt,
+                  });
                   payloadString = JSON.stringify(nextStepsResult);
                 } else {
                   // Generic cases: dependencies, features

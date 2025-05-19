@@ -89,7 +89,7 @@ const deductUserCredits = async (
   try {
     // First check if user has enough credits
     const userCredit = await UserCredit.findOne({ userId });
-    console.log({ userCredit });
+
     if (!userCredit || userCredit.credits < amount) {
       logger.error("Not enough credits");
       return false; // Insufficient credits
@@ -122,23 +122,27 @@ const initializeUserCredits = async (
   try {
     // Check if user already has a credit record
     const existingCredits = await UserCredit.findOne({ userId });
-    
+
     if (existingCredits) {
-      logger.info(`User ${userId} already has credits initialized: ${existingCredits.credits}`);
+      logger.info(
+        `User ${userId} already has credits initialized: ${existingCredits.credits}`
+      );
       return existingCredits.credits;
     }
-    
+
     // Create new credit record with initial credits
     const userCredit = await UserCredit.create({
       userId,
-      credits: initialCredits
+      credits: initialCredits,
     });
-    
+
     logger.info(`Initialized ${initialCredits} credits for new user ${userId}`);
     return userCredit.credits;
   } catch (error) {
     logger.error("Error initializing user credits:", error);
-    throw new Error(`Failed to initialize user credits: ${(error as Error).message}`);
+    throw new Error(
+      `Failed to initialize user credits: ${(error as Error).message}`
+    );
   }
 };
 

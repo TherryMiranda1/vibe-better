@@ -1,44 +1,23 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
-import { getUserCredits } from "@/lib/services/client/userCredits.service";
 import { Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import useUserStore from "@/context/store";
 
-export function UserCredits() {
-  const { user, isLoaded } = useUser();
-  const userCredits = useUserStore((state) => state.userCredits);
-  const updateUserCredits = useUserStore((state) => state.updateUserCredits);
-  const [isLoading, setIsLoading] = useState(true);
+export interface UserCreditsProps {
+  userCredits: number | null;
+  isLoading: boolean;
+}
+
+export function UserCredits({ userCredits, isLoading }: UserCreditsProps) {
   const router = useRouter();
 
-  useEffect(() => {
-    async function fetchCredits() {
-      if (isLoaded && user) {
-        try {
-          setIsLoading(true);
-          const userCredits = await getUserCredits();
-          updateUserCredits(userCredits);
-        } catch (error) {
-          console.error("Error fetching user credits:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    fetchCredits();
-  }, [user, isLoaded]);
-
-  if (!isLoaded || isLoading) {
+  if (isLoading) {
     return (
       <div className="w-12 h-6 rounded-md border animate-pulse bg-primary/5" />
     );
   }
 
-  if (!user) {
+  if (userCredits === null) {
     return null;
   }
 

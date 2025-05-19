@@ -41,7 +41,6 @@ export async function saveAnalysis(
       resultsContent: cleanResultsContent,
       timestamp: new Date(),
     });
-    console.log({ newAnalysis, analysisData });
     return {
       id: newAnalysis._id.toString(),
       userId: newAnalysis.userId,

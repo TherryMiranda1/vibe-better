@@ -74,20 +74,18 @@ export default function PricingSection({ products }: PricingSectionProps) {
       <div className="mt-16 bg-card rounded-lg shadow-lg overflow-hidden">
         <div className="px-6 py-8">
           <h2 className="text-2xl font-bold text-center text-foreground">
-            Todas las características incluidas
+            All features included
           </h2>
           <p className="mt-4 max-w-2xl mx-auto text-center text-muted-foreground">
-            Todos nuestros paquetes de créditos incluyen acceso completo a todas
-            las funcionalidades de la plataforma.
+            All our credit packages include access to all platform features.
           </p>
 
           <div className="mt-8 space-y-4">
             {[
-              "Análisis detallado de prompts",
-              "Sugerencias de optimización personalizadas",
-              "Biblioteca de ejemplos de prompts efectivos",
-              "Historial de prompts analizados",
-              "Exportación de resultados",
+              "Detailed prompt analysis",
+              "Custom optimization suggestions",
+              "Effective prompt examples library",
+              "Prompt history",
             ].map((feature) => (
               <div key={feature} className="flex items-start">
                 <div className="flex-shrink-0">
