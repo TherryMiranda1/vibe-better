@@ -30,8 +30,8 @@ export function AppHeader() {
   const navigationLinks = [
     { href: "/prompts", label: "Prompts" },
     { href: "/glossary", label: "Tags" },
-    { href: "/pricing", label: "Precios" },
-    ...(userId ? [{ href: "/organizations", label: "Organizaciones" }] : []),
+    { href: "/pricing", label: "Prices" },
+    ...(userId ? [{ href: "/organizations", label: "Organizations" }] : []),
   ];
 
   return (

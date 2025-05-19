@@ -8,18 +8,6 @@ export const HoverSurface = ({ children }: HoverSurfaceProps) => {
   const [coords, setCoords] = useState({ x: 50, y: 50 });
   const [hovered, setHovered] = useState(false);
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [particles, setParticles] = useState<
-    { x: number; y: number; id: number }[]
-  >([]);
-
-  const emitParticle = (x: number, y: number) => {
-    const id = Date.now() + Math.random();
-    setParticles((prev) => [...prev, { x, y, id }]);
-    setTimeout(() => {
-      setParticles((prev) => prev.filter((p) => p.id !== id));
-    }, 300);
-  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } =
@@ -28,7 +16,6 @@ export const HoverSurface = ({ children }: HoverSurfaceProps) => {
     const yPercent = ((e.clientY - top) / height) * 100;
     setCoords({ x: xPercent, y: yPercent });
     setCursorPos({ x: e.clientX, y: e.clientY });
-    emitParticle(e.clientX - 6, e.clientY - 10);
   };
 
   return (
@@ -45,24 +32,6 @@ export const HoverSurface = ({ children }: HoverSurfaceProps) => {
       }
       className="relative w-full min-h-screen overflow-hidden"
     >
-      {/* Video background with fade-in effect */}
-      {/* <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        onCanPlayThrough={() => setVideoLoaded(true)}
-        className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-[2000ms] ${
-          videoLoaded ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <source
-          src="https://res.cloudinary.com/dtlaxm8gi/video/upload/v1747246345/Home_n1vcao.mp4"
-          type="video/mp4"
-        />
-        Tu navegador no soporta la etiqueta de video.
-      </video> */}
-
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-background/50 z-10" />
 
@@ -80,21 +49,6 @@ export const HoverSurface = ({ children }: HoverSurfaceProps) => {
           opacity: hovered ? 1 : 0,
         }}
       />
-
-      {/* Particle effects */}
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="pointer-events-none fixed z-10 w-1.5 h-1.5 rounded-full bg-cyan-400/50 shadow-lg"
-          style={{
-            left: p.x,
-            top: p.y,
-            transform: "translate(-50%, -50%)",
-            animation: "fadeOut 0.6s ease-out forwards",
-            boxShadow: "0 0 6px rgba(0, 255, 255, 0.5)",
-          }}
-        />
-      ))}
 
       {/* Custom SVG cursor (neon arrow) */}
       {hovered && (

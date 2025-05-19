@@ -29,7 +29,7 @@ import type {
   AnalysisUpdateEvent,
   TokenUsage,
 } from "@/types/analysis";
-import { Settings, Zap } from "lucide-react";
+import { Loader2, Settings, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
@@ -460,75 +460,16 @@ const Analysis = () => {
 
   return (
     <div className="flex z-20 flex-col max-w-2xl w-full items-center mx-auto text-left">
-      <Card className="w-full rounded-xl bg-background shadow-2xl relative border-primary/50 backdrop-blur-sm mb-4 p-4 flex flex-col gap-4">
-        <header className="flex justify-between items-center">
-          <h3 className="text-md font-bold">
-            Ingresa tu prompt de código y lo optimizaremos por ti.
-          </h3>
-          <div className="m-2">
-            <DropdownMenu
-              open={isSettingsMenuOpen}
-              onOpenChange={handleSettingsMenuOpenChange}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" disabled={isAnalyzing}>
-                  <Settings className="h-5 w-5" />
-                  <span className="sr-only">Configurar Análisis</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>Seleccionar Análisis</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {analysisOrder.map((key) => {
-                  const config = analysisConfig[key];
-                  const isMandatory = mandatoryKeys.has(key);
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={key}
-                      checked={isMandatory || temporaryActiveAnalyses.has(key)}
-                      disabled={isMandatory || isAnalyzing}
-                      onCheckedChange={(checked) => {
-                        if (!isMandatory) {
-                          setTemporaryActiveAnalyses((prev) => {
-                            const newSet = new Set(prev);
-                            if (checked) {
-                              newSet.add(key);
-                            } else {
-                              newSet.delete(key);
-                            }
-                            return newSet;
-                          });
-                        }
-                      }}
-                      onSelect={(e) => e.preventDefault()}
-                    >
-                      {config.title}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-                <DropdownMenuSeparator />
-                <div className="p-1">
-                  <Button
-                    onClick={handleApplySettings}
-                    className="w-full"
-                    disabled={isAnalyzing}
-                  >
-                    Aplicar
-                  </Button>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-        <CardContent className="p-0">
+      <section className="w-full relative mb-4 flex flex-col gap-4">
+        <div>
           <form onSubmit={handleOptimizePrompt} className="space-y-6">
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Textarea
-                placeholder="Ej: Quiero crear un componente de React para mostrar una lista de usuarios con paginación y filtros..."
+                placeholder="Enter your prompt and we will optimize it for you. Ej: I want to create a React component to display a list of users with pagination and filters..."
                 value={promptText}
                 rows={6}
                 onChange={(e) => setPromptText(e.target.value)}
-                className="p-4 rounded-xl shadow-inner focus:ring-primary/50 focus:ring-2 bg-card text-foreground placeholder:text-muted-foreground"
+                className="p-4 rounded-xl bg-card text-foreground placeholder:text-muted-foreground placeholder:text-xs border-primary/20"
                 disabled={isAnalyzing}
                 maxLength={10000}
               />
@@ -538,7 +479,7 @@ const Analysis = () => {
               <Accordion type="single" collapsible className="w-full mb-2 ">
                 <AccordionItem value="advanced-mode">
                   <AccordionTrigger className="w-full flex items-center justify-between rounded-xl px-4 py-2 hover:bg-muted text-muted-foreground">
-                    <span className="font-semibold text-sm">Modo avanzado</span>
+                    <span className="font-semibold text-sm">Advanced mode</span>
                   </AccordionTrigger>
                   <AccordionContent className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-4">
                     {promptEngineeringModes.map((mode) => {
@@ -576,14 +517,24 @@ const Analysis = () => {
                 </AccordionItem>
               </Accordion>
             </div>
-            <nav className="flex justify-center gap-2">
+            <nav className="flex justify-center items-center gap-2">
               <SignedIn>
                 <button
                   type="submit"
                   className="flex items-center bg-white  justify-center gap-2 text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                   disabled={isAnalyzing || !promptText.trim()}
                 >
-                  {isAnalyzing ? "Mejorando tu prompt..." : "Optimizar"} <Zap />
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="animate-spin" /> Improving your
+                      prompt...
+                    </>
+                  ) : (
+                    <>
+                      Optimize
+                      <Zap className="w-5 h-5 text-primary" />
+                    </>
+                  )}
                 </button>
               </SignedIn>
               <SignedOut>
@@ -603,10 +554,69 @@ const Analysis = () => {
                   </button>
                 </SignInButton>
               </SignedOut>
+              <DropdownMenu
+                open={isSettingsMenuOpen}
+                onOpenChange={handleSettingsMenuOpenChange}
+              >
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2 hover:bg-primary/10 py-5  rounded-xl"
+                    disabled={isAnalyzing}
+                  >
+                    <Settings className="h-6 w-6" />
+                    <span className="sr-only">Analysis Settings</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuLabel>Analysis Settings</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {analysisOrder.map((key) => {
+                    const config = analysisConfig[key];
+                    const isMandatory = mandatoryKeys.has(key);
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={key}
+                        checked={
+                          isMandatory || temporaryActiveAnalyses.has(key)
+                        }
+                        disabled={isMandatory || isAnalyzing}
+                        onCheckedChange={(checked) => {
+                          if (!isMandatory) {
+                            setTemporaryActiveAnalyses((prev) => {
+                              const newSet = new Set(prev);
+                              if (checked) {
+                                newSet.add(key);
+                              } else {
+                                newSet.delete(key);
+                              }
+                              return newSet;
+                            });
+                          }
+                        }}
+                        onSelect={(e) => e.preventDefault()}
+                      >
+                        {config.title}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+                  <DropdownMenuSeparator />
+                  <div className="p-1">
+                    <Button
+                      onClick={handleApplySettings}
+                      className="w-full"
+                      disabled={isAnalyzing}
+                    >
+                      Aplicar
+                    </Button>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </nav>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       {hasAnyActiveAnalysisStartedOrHasContent &&
         accordionSectionsToShow.length > 0 && (
@@ -641,10 +651,9 @@ const Analysis = () => {
       )}
 
       {!isAnalyzing && Number(totalTokenUsage?.totalTokens) > 0 && (
-        <div className="w-full max-w-2xl mt-4 text-right text-xs text-muted-foreground">
-          Tokens totales: Entrada{" "}
-          {totalTokenUsage.inputTokens?.toLocaleString() || 0} / Salida{" "}
-          {totalTokenUsage.outputTokens?.toLocaleString() || 0}
+        <div className="w-full max-w-2xl text-right text-xs text-muted-foreground">
+          Tokens: Input {totalTokenUsage.inputTokens?.toLocaleString() || 0} /
+          Output {totalTokenUsage.outputTokens?.toLocaleString() || 0}
         </div>
       )}
     </div>

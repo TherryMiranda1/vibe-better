@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import { PromptDetailView } from "@/components/prompt-detail-view";
 import { Prompt, FilterState } from "@/types/prompts";
+import { Breadcrumbs } from "@/components/ui/breadcrumb";
 
 const PromptsPage = () => {
   // State for filters and sorting
@@ -46,26 +47,17 @@ const PromptsPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Helper functions to map string values to enum values
-  const mapToCategory = useCallback(
-    (value: string): string => {
-      return value;
-    },
-    []
-  );
+  const mapToCategory = useCallback((value: string): string => {
+    return value;
+  }, []);
 
-  const mapToLevel = useCallback(
-    (value: string): string => {
-      return value;
-    },
-    []
-  );
+  const mapToLevel = useCallback((value: string): string => {
+    return value;
+  }, []);
 
-  const mapToStage = useCallback(
-    (value: string): string => {
-      return value;
-    },
-    []
-  );
+  const mapToStage = useCallback((value: string): string => {
+    return value;
+  }, []);
 
   // Memoized level order for sorting
   const levelOrder = useMemo(
@@ -252,11 +244,17 @@ const PromptsPage = () => {
 
   return (
     <div className="container py-8 px-6 max-w-7xl mx-auto">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Prompts", href: "/prompts" },
+        ]}
+      />
       <div className="flex flex-col space-y-4 mb-8">
-        <h1 className="text-3xl font-bold">Biblioteca de Prompts</h1>
+        <h1 className="text-3xl font-bold">Library of Prompts</h1>
         <p className="text-muted-foreground">
-          Explora nuestra colección de prompts optimizados para mejorar tus
-          interacciones con LLMs y generar código de alta calidad.
+          Explore our collection of optimized prompts to improve your
+          interactions with LLMs and generate high-quality code.
         </p>
       </div>
 
@@ -282,9 +280,7 @@ const PromptsPage = () => {
               <SelectValue placeholder="Categoría" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ "Todos"}>
-                Todas las categorías
-              </SelectItem>
+              <SelectItem value={"Todos"}>All categories</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}
@@ -301,7 +297,7 @@ const PromptsPage = () => {
               <SelectValue placeholder="Nivel" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ "Todos"}>Todos los niveles</SelectItem>
+              <SelectItem value={"Todos"}>All levels</SelectItem>
               {levels.map((level) => (
                 <SelectItem key={level} value={level}>
                   {level}
@@ -318,7 +314,7 @@ const PromptsPage = () => {
               <SelectValue placeholder="Etapa" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ "Todos"}>Todas las etapas</SelectItem>
+              <SelectItem value={"Todos"}>All stages</SelectItem>
               {stages.map((stage) => (
                 <SelectItem key={stage} value={stage}>
                   {stage}
@@ -330,7 +326,7 @@ const PromptsPage = () => {
 
         <div className="flex items-center space-x-2">
           <span className="text-sm text-muted-foreground">
-            {filteredPrompts.length} prompts encontrados
+            {filteredPrompts.length} prompts found
           </span>
           {(searchTerm ||
             category ||
@@ -377,7 +373,7 @@ const PromptsPage = () => {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Copiar prompt</p>
+                        <p>Copy prompt</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -422,7 +418,7 @@ const PromptsPage = () => {
                       className="w-full"
                       onClick={() => openPromptDetail(prompt)}
                     >
-                      Ver detalles
+                      View details
                     </Button>
                   </DialogTrigger>
                 </Dialog>
@@ -448,15 +444,13 @@ const PromptsPage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
             <Filter className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium mb-2">
-            No se encontraron prompts
-          </h3>
+          <h3 className="text-lg font-medium mb-2">No prompts found</h3>
           <p className="text-muted-foreground max-w-md mx-auto">
-            No hay prompts que coincidan con tus criterios de búsqueda. Intenta
-            ajustar los filtros o buscar con otros términos.
+            No prompts found that match your search criteria. Try adjusting the
+            filters or searching with different terms.
           </p>
           <Button variant="outline" className="mt-4" onClick={resetFilters}>
-            Limpiar filtros
+            Clear filters
           </Button>
         </div>
       )}

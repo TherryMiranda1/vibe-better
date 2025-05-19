@@ -52,24 +52,24 @@ interface EmotionalFeedback {
 
 const getEmotionalFeedback = (score: number | null): EmotionalFeedback => {
   if (score === null) {
-    return { text: 'Puntuación no disponible', variant: 'secondary', className: 'bg-muted text-muted-foreground' };
+    return { text: 'Score not available', variant: 'secondary', className: 'bg-muted text-muted-foreground' };
   }
   if (score >= 90) {
-    return { text: '¡Excelente!', variant: 'default', className: 'bg-green-500 text-background' };
+    return { text: 'Excelent!', variant: 'default', className: 'bg-green-500 text-background' };
   }
   if (score >= 70) {
-    return { text: '¡Muy Bien!', variant: 'default', className: 'bg-primary text-background' };
+    return { text: 'Very Good!', variant: 'default', className: 'bg-primary text-background' };
   }
   if (score >= 50) {
-    return { text: '¡Buen Comienzo!', variant: 'default', className: 'bg-yellow-400 text-background' };
+    return { text: 'Good Start!', variant: 'default', className: 'bg-yellow-400 text-background' };
   }
-  return { text: 'Necesita Mejoras', variant: 'destructive', className: 'bg-red-600 text-background' };
+  return { text: 'Needs Improvements', variant: 'destructive', className: 'bg-red-600 text-background' };
 };
 
 export function ScoreDisplay({ scoreContent, isLoading, usage }: ScoreDisplayProps) {
   if (isLoading) {
     return (
-      <Card className="w-full max-w-2xl mt-8 mb-12 shadow-xl border-muted border-2 animate-pulse">
+      <Card className="w-full max-w-2xl my-6 shadow-xl border-muted border-2 animate-pulse">
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center items-center mb-2">
             <Award className="w-10 h-10 text-muted" />
@@ -97,12 +97,12 @@ export function ScoreDisplay({ scoreContent, isLoading, usage }: ScoreDisplayPro
   const feedback = getEmotionalFeedback(score);
 
   return (
-    <Card className="w-full max-w-2xl mt-8 mb-12 shadow-xl border-primary border-2">
+    <Card className="w-full max-w-2xl my-6 shadow-xl border-primary border-2">
       <CardHeader className="text-center pb-2">
         <div className="flex justify-center items-center mb-2">
           <Award className="w-10 h-10 text-primary" />
         </div>
-        <CardTitle className="text-2xl font-semibold text-primary">Puntuación Global del Prompt</CardTitle>
+        <CardTitle className="text-2xl font-semibold text-primary">Global Prompt Score</CardTitle>
       </CardHeader>
       <CardContent className="text-center">
         {score !== null ? (
@@ -111,7 +111,7 @@ export function ScoreDisplay({ scoreContent, isLoading, usage }: ScoreDisplayPro
             <span className="text-3xl text-muted-foreground">/100</span>
           </div>
         ) : (
-          <p className="text-muted-foreground my-4 py-8">No se pudo determinar la puntuación numérica.</p>
+          <p className="text-muted-foreground my-4 py-8">Score not available.</p>
         )}
         <Badge variant={feedback.variant} className={`text-lg px-6 py-3 rounded-md ${feedback.className || ''}`}>
           {feedback.text}
@@ -124,7 +124,7 @@ export function ScoreDisplay({ scoreContent, isLoading, usage }: ScoreDisplayPro
          {usage && (usage.inputTokens != null || usage.outputTokens != null) && (
           <div className="mt-4 text-xs text-muted-foreground">
             <Info className="inline h-3 w-3 mr-1" />
-            Tokens para esta puntuación: Entrada {usage.inputTokens ?? 'N/A'} / Salida {usage.outputTokens ?? 'N/A'}
+            Tokens for this score: Input {usage.inputTokens ?? 'N/A'} / Output {usage.outputTokens ?? 'N/A'}
           </div>
         )}
       </CardContent>

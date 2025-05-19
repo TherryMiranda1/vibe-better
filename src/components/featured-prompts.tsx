@@ -23,9 +23,9 @@ export function FeaturedPrompts() {
     <section className="py-12 bg-muted/30">
       <div className="container max-w-7xl mx-auto px-4 md:px-6">
         <div className="flex flex-col items-center text-center mb-10">
-          <h2 className="text-3xl font-bold tracking-tight mb-2">Prompts Destacados</h2>
+          <h2 className="text-3xl font-bold tracking-tight mb-2">Featured Prompts</h2>
           <p className="text-muted-foreground max-w-2xl">
-            Descubre nuestra selección de prompts optimizados para mejorar tus interacciones con LLMs y generar código de alta calidad.
+            Discover our selection of optimized prompts to improve your interactions with LLMs and generate high-quality code.
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export function FeaturedPrompts() {
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Copiar prompt</p>
+                        <p>Copy prompt</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -80,7 +80,7 @@ export function FeaturedPrompts() {
               <CardFooter className="pt-2 border-t">
                 <Link href={`/prompts?id=${prompt.id}`} className="w-full">
                   <Button variant="ghost" className="w-full">
-                    Ver detalles
+                    View details
                   </Button>
                 </Link>
               </CardFooter>
@@ -91,7 +91,7 @@ export function FeaturedPrompts() {
         <div className="flex justify-center mt-10">
           <Link href="/prompts">
             <Button className="group text-background">
-              Ver todos los prompts
+              View all prompts
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>

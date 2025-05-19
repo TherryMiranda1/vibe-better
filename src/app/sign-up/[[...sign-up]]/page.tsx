@@ -31,7 +31,7 @@ export default function Page() {
               className="text-xl font-bold md:text-2xl animate-fade-up"
               style={{ animationDelay: "0.2s" }}
             >
-              Optimiza tus prompts en segundos
+              Optimize your prompts in seconds
             </p>
           </div>
         </div>

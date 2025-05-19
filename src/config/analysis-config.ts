@@ -1,5 +1,4 @@
-
-import type { AnalysisSections, AnalysisSectionKey } from '@/types/analysis';
+import type { AnalysisSectionKey } from "@/types/analysis";
 import {
   Puzzle,
   Boxes,
@@ -7,46 +6,58 @@ import {
   FilePenLine,
   Award,
   type LucideIcon,
-} from 'lucide-react';
+} from "lucide-react";
 
-const createAnalysisConfig = <T extends Record<AnalysisSectionKey, { title: string; Icon: LucideIcon; instruction: string }>>(config: T): T => config;
+const createAnalysisConfig = <
+  T extends Record<
+    AnalysisSectionKey,
+    { title: string; Icon: LucideIcon; instruction: string }
+  >,
+>(
+  config: T
+): T => config;
 
 export const LOADING_EVENT_VALUE = "__ANALYSIS_SECTION_LOADING__";
 
 export const analysisConfig = createAnalysisConfig({
   complexity: {
-    title: 'Análisis de Complejidad',
+    title: "Complexity Analysis",
     Icon: Puzzle,
-    instruction: 'Eres un asistente de IA especializado en evaluar la complejidad de tareas de codificación basándote en un sistema de puntuación detallado y DEBES responder en ESPAÑOL...',
+    instruction:
+      "You're an AI assistant specialized in evaluating the complexity of coding tasks based on a detailed scoring system...",
   },
   dependencies: {
-    title: 'Análisis de Dependencias',
+    title: "Dependencies Analysis",
     Icon: Boxes,
-    instruction: "Analiza si se requieren dependencias externas para la tarea solicitada. Considera primero si la funcionalidad se puede lograr con APIs nativas del navegador, características incorporadas del framework o código personalizado simple. Sugiere dependencias externas SOLO si la funcionalidad es imposible sin ellas, o si implementarla desde cero sería excesivamente complejo o redundante (ej. para manipulación avanzada de fechas, gestión de estado global compleja, librerías de componentes UI para frameworks establecidos). Si no se necesitan dependencias externas cruciales o que aporten un beneficio significativo, tu RESPUESTA COMPLETA Y ÚNICA DEBE SER: 'No se requieren dependencias externas para esta tarea.' O, si es aplicable: 'Se puede realizar con funcionalidades nativas del framework/navegador.'. NO AÑADAS NADA MÁS A ESTA RESPUESTA. Si sugieres dependencias, lista cada una en una nueva línea (MÁXIMO 15), con el formato: 'NombreLibreria: Justificación MUY BREVE (ej: 3-7 palabras)'. Sé conciso en las justificaciones. Responde en ESPAÑOL.",
+    instruction:
+      "Analyze whether external dependencies are required for the requested task. First, consider whether the functionality can be achieved using native browser APIs, built-in framework features, or simple custom code. Suggest external dependencies ONLY if the functionality is impossible without them or if implementing it from scratch would be excessively complex or redundant (e.g., for advanced date manipulation, complex global state management, or UI component libraries for established frameworks). If no crucial external dependencies are needed or they don't provide significant benefit, your ENTIRE AND ONLY RESPONSE MUST BE: 'No external dependencies are required for this task.' Or, if applicable: 'This can be done with native framework/browser features.' DO NOT ADD ANYTHING ELSE TO THIS RESPONSE. If you suggest dependencies, list each one on a new line (MAXIMUM 15), using the format: 'LibraryName: VERY BRIEF justification (e.g., 3–7 words)'. Be concise in the justifications.",
   },
   features: {
-    title: 'Análisis de Funcionalidades',
+    title: "Features Analysis",
     Icon: SlidersHorizontal,
-    instruction: 'Detecta y lista las funcionalidades clave descritas o implícitas en el prompt. Cada funcionalidad debe estar en una nueva línea, idealmente comenzando con un guion o un identificador de lista (ej: "- Funcionalidad X"). Responde en ESPAÑOL.',
+    instruction:
+      'Detect and list the key functionalities described or implied in the prompt. Each functionality should be on a new line, ideally starting with a dash or list identifier (e.g., "- Functionality X").',
   },
   suggestedPrompt: {
-    title: 'Prompt Sugerido',
+    title: "Suggested Prompt",
     Icon: FilePenLine,
-    instruction: 'Este prompt se usa en un flujo especializado. Reescribe el prompt original mejorándolo. Genera una versión concisa y una elaborada. Ambas en ESPAÑOL.',
+    instruction:
+      "This prompt is used in a specialized flow. Rewrite the original prompt to improve it. Generate a concise version and an elaborated version.",
   },
   score: {
-    title: 'Puntuación Global',
+    title: "Global Score",
     Icon: Award,
-    instruction: 'Asigna una puntuación del 0 al 100 evaluando la claridad, especificidad, completitud y uso efectivo de tags/conceptos técnicos del prompt original, considerando su complejidad aparente. Justifica brevemente la puntuación EN ESPAÑOL. El formato de tu respuesta DEBE ser "PUNTUACIÓN/100: Justificación concisa.". Ejemplo: "85/100: El prompt es claro y específico, pero podría detallar más sobre X."',
+    instruction:
+      'Assign a score from 0 to 100 evaluating the clarity, specificity, completeness, and effective use of technical tags/concepts from the original prompt, considering its apparent complexity. Briefly justify the score. Your response format MUST be "SCORE/100: Concise justification." Example: "85/100: The prompt is clear and specific, but could benefit from more detail on X. In the prompt Language"',
   },
 });
 
 // Order matters for API processing if one depends on another
 export const analysisOrder: AnalysisSectionKey[] = [
-  'complexity',
-  'dependencies',
-  'features',
+  "complexity",
+  "dependencies",
+  "features",
   // 'recommendations', // Removed
-  'suggestedPrompt',
-  'score',
+  "suggestedPrompt",
+  "score",
 ];

@@ -57,16 +57,24 @@ function getComplexityColorClass(level: string): string {
   const normalizedLevel = level.toLowerCase();
   if (
     normalizedLevel.includes("muy baja") ||
-    normalizedLevel.includes("baja")
+    normalizedLevel.includes("baja") ||
+    normalizedLevel.includes("low") ||
+    normalizedLevel.includes("very low")
   ) {
     return "text-[hsl(var(--complexity-low))]";
   }
-  if (normalizedLevel.includes("moderada")) {
+  if (
+    normalizedLevel.includes("moderada") ||
+    normalizedLevel.includes("medium") ||
+    normalizedLevel.includes("moderate")
+  ) {
     return "text-[hsl(var(--complexity-medium))]";
   }
   if (
     normalizedLevel.includes("alta") ||
-    normalizedLevel.includes("muy alta")
+    normalizedLevel.includes("muy alta") ||
+    normalizedLevel.includes("high") ||
+    normalizedLevel.includes("very high")
   ) {
     return "text-[hsl(var(--complexity-high))]";
   }
@@ -387,7 +395,7 @@ export default function AnalysisSection({
             {structuredComplexityContent.feedback && (
               <div className="mt-3 p-3 border border-yellow-500/50 rounded-md bg-yellow-500/10">
                 <h4 className="font-semibold text-sm text-yellow-700 dark:text-yellow-400 mb-1">
-                  Feedback Adicional:
+                  Additional Feedback:
                 </h4>
                 <p className="text-xs text-yellow-600 dark:text-yellow-300">
                   {structuredComplexityContent.feedback}
@@ -402,10 +410,10 @@ export default function AnalysisSection({
             <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
             <div>
               <p className="font-semibold">
-                Formato de Análisis de Complejidad no reconocido
+                Unrecognized Complexity Analysis Format
               </p>
               <p className="text-xs mt-1">
-                El análisis se muestra como texto sin formato.
+                The analysis is displayed as unformatted text.
               </p>
               <pre className="text-sm text-foreground whitespace-pre-wrap mt-3 p-2 bg-background/50 rounded font-mono text-xs">
                 {content}
@@ -424,7 +432,7 @@ export default function AnalysisSection({
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-md font-semibold text-foreground flex items-center">
                   <PencilLine className="h-5 w-5 mr-2 text-primary" />
-                  Sugerencia Concisa
+                  Concise Suggestion
                 </h4>
                 <Button
                   variant="outline"
@@ -455,7 +463,7 @@ export default function AnalysisSection({
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-md font-semibold text-foreground flex items-center">
                   <SparklesIcon className="h-5 w-5 mr-2 text-accent" />
-                  Sugerencia Elaborada (para Óptimos Resultados)
+                  Elaborated Suggestion (for Optimal Results)
                 </h4>
                 <Button
                   variant="outline"
@@ -488,7 +496,7 @@ export default function AnalysisSection({
                 className="text-primary hover:underline flex items-center py-2 px-3 rounded-md hover:bg-primary/10 transition-colors w-fit"
               >
                 <BookMarked className="h-4 w-4 mr-1.5 flex-shrink-0" />
-                Consultar glosario de tags
+                Check the glossary of tags
               </Link>
             </div>
           </div>
@@ -499,10 +507,10 @@ export default function AnalysisSection({
             <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
             <div>
               <p className="font-semibold">
-                Formato de Prompt Sugerido no reconocido
+                Unrecognized Suggested Prompt Format
               </p>
               <p className="text-xs mt-1">
-                El prompt se muestra como texto sin formato.
+                The prompt is displayed as unformatted text.
               </p>
               <pre className="text-sm text-foreground whitespace-pre-wrap mt-3 p-2 bg-background/50 rounded font-mono text-xs">
                 {content}
@@ -540,10 +548,10 @@ export default function AnalysisSection({
             <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
             <div>
               <p className="font-semibold">
-                Formato de dependencias no reconocido
+                Unrecognized Dependencies Format
               </p>
               <p className="text-xs mt-1">
-                El análisis se muestra como texto sin formato.
+                The dependencies are displayed as unformatted text.
               </p>
               <pre className="text-sm text-foreground whitespace-pre-wrap mt-3 p-2 bg-background/50 rounded font-mono text-xs">
                 {content}
@@ -589,10 +597,10 @@ export default function AnalysisSection({
             <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
             <div>
               <p className="font-semibold">
-                Formato de funcionalidades no reconocido
+                Unrecognized Features Format
               </p>
               <p className="text-xs mt-1">
-                El análisis se muestra como texto sin formato.
+                The features are displayed as unformatted text.
               </p>
               <pre className="text-sm text-foreground whitespace-pre-wrap mt-3 p-2 bg-background/50 rounded font-mono text-xs">
                 {content}
@@ -638,7 +646,7 @@ export default function AnalysisSection({
 
     return (
       <p className="text-sm text-muted-foreground mt-2">
-        No hay contenido para mostrar o la sección no se procesó.
+        No content to display or the section was not processed.
       </p>
     );
   };
@@ -650,7 +658,7 @@ export default function AnalysisSection({
         className="bg-card border border-border rounded-lg shadow-md overflow-hidden"
       >
         <AccordionTrigger className="p-4 text-base font-medium hover:no-underline hover:bg-accent/10 transition-colors w-full">
-          <div className="flex items-center justify-between w-full">
+          <div className="flex flex-wrap items-center justify-between w-full">
             <div className="flex items-center space-x-3 min-w-0">
               {isLoading ? (
                 <Loader2 className="h-5 w-5 text-primary flex-shrink-0 animate-spin" />
@@ -666,12 +674,12 @@ export default function AnalysisSection({
               </span>
             </div>
 
-            <div className="flex flex-col items-end text-right pl-2 flex-shrink-0">
+            <div className="flex flex-col items-end text-right text-xs  flex-shrink-0">
               {itemKey === "complexity" &&
                 structuredComplexityContent &&
                 !isLoading && (
                   <span
-                    className={`text-sm font-semibold ${getComplexityColorClass(
+                    className={`text-xs  ${getComplexityColorClass(
                       structuredComplexityContent.complexityLevel
                     )} whitespace-nowrap`}
                   >
@@ -689,7 +697,7 @@ export default function AnalysisSection({
             (usage.inputTokens != null || usage.outputTokens != null) && (
               <div className="text-right text-xs text-muted-foreground mt-3 pt-2 border-t border-border/50">
                 <Info className="inline h-3 w-3 mr-1 align-middle" />
-                Tokens: Entrada {usage.inputTokens ?? "N/A"} / Salida{" "}
+                Tokens: Input {usage.inputTokens ?? "N/A"} / Output{" "}
                 {usage.outputTokens ?? "N/A"}
               </div>
             )}
@@ -716,7 +724,7 @@ export default function AnalysisSection({
                 className="bg-foreground text-background"
                 onClick={() => setActiveGlossaryTag(null)}
               >
-                Cerrar
+                Close
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

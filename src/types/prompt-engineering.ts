@@ -20,43 +20,43 @@ export const promptEngineeringModes: PromptEngineeringModeConfig[] = [
   {
     id: 'chain-of-thought',
     name: 'Chain-of-Thought (CoT)',
-    description: 'Induce al modelo a exponer paso a paso su razonamiento antes de la respuesta final, emulando cómo descomponemos problemas complejos.',
+    description: 'Leads the model to expose its step-by-step reasoning before the final answer, emulating how we break down complex problems.',
     icon: BrainCog
   },
   {
     id: 'few-shot',
     name: 'Few-Shot Prompting',
-    description: 'Proporciona varios ejemplos ("shots") de input-output dentro del prompt para que el modelo aprenda el formato, estilo y lógica de la tarea.',
+    description: 'Provides several input-output examples ("shots") within the prompt so the model learns the format, style, and logic of the task.',
     icon: ListChecks
   },
   {
     id: 'retrieval-augmented',
     name: 'Retrieval-Augmented Generation (RAG)',
-    description: 'Recupera fragmentos de una base de conocimiento externa (docs, API, wiki interna) y los incluye en el prompt, para respuestas más precisas y actualizadas.',
+    description: 'Retrieves snippets from an external knowledge base (docs, API, internal wiki) and includes them in the prompt for more accurate and up-to-date answers.',
     icon: Search
   },
   {
     id: 'zero-shot',
     name: 'Zero-Shot Prompting',
-    description: 'Pide al modelo realizar la tarea sin ejemplos, basándose sólo en la instrucción clara.',
+    description: 'Asks the model to perform the task without examples, relying only on a clear instruction.',
     icon: CircleDot
   },
   {
     id: 'self-consistency',
     name: 'Self-Consistency Prompting',
-    description: 'Genera múltiples cadenas de CoT (vías de razonamiento) y vota la respuesta más frecuente para robustecer la solución.',
+    description: 'Generates multiple CoT chains (reasoning paths) and votes for the most frequent answer to strengthen the solution.',
     icon: RefreshCw
   },
   {
     id: 'tree-of-thoughts',
     name: 'Tree-of-Thoughts (ToT)',
-    description: 'Estructura el razonamiento como un árbol: en cada nodo genera varias "ideas" (pensamientos), las evalúa y explora ramas promisorias, con posibilidad de retroceder.',
+    description: 'Structures reasoning as a tree: at each node, generates several "ideas" (thoughts), evaluates them, and explores promising branches, with the possibility to backtrack.',
     icon: GitBranch
   },
   {
     id: 'auto-prompting',
     name: 'Auto-Prompting',
-    description: 'Emplea otro LLM para generar y evaluar automáticamente múltiples versiones de prompts optimizados para la tarea, con métricas como precisión o estilo.',
+    description: 'Uses another LLM to automatically generate and evaluate multiple versions of prompts optimized for the task, using metrics such as accuracy or style.',
     icon: Wand2
   }
 ];

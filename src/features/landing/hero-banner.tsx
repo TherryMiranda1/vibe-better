@@ -2,15 +2,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { HoverSurface } from "./hover-surface";
 
-const defaultAnimatedWords = ["Prompts", "Horas", "Dólares"];
+const defaultAnimatedWords = ["Prompts", "Hours", "Dollars"];
 const WORD_VISIBLE_DURATION = 3000; // Time a full word stays visible
-const TYPING_SPEED_MS = 120; // Speed of typing each character
+const TYPING_SPEED_MS = 100; // Speed of typing each character
 const DELETING_SPEED_MS = 70; // Speed of deleting each character
 
 interface HeroBannerProps {
@@ -24,9 +19,9 @@ interface HeroBannerProps {
 
 export function HeroBanner({
   tagline = "",
-  titlePrefix = "Ahorra cientos de",
+  titlePrefix = "Save hundreds of ",
   animatedWords = defaultAnimatedWords,
-  descriptionText = "Mejora la calidad de tus prompts. Genera código impecable con IA en segundos. Captura ideas claras, impulsa tu productividad.",
+  descriptionText = "Refine your prompts, generate flawless code with AI in seconds. Turn clear ideas into real results and boost your productivity.",
   children,
 }: HeroBannerProps) {
   const [wordIndex, setWordIndex] = useState(0);
@@ -91,9 +86,9 @@ export function HeroBanner({
           {tagline}
         </div>
       )}
-      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 mt-12">
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 mt-12 text-center">
         {titlePrefix}{" "}
-        <span className="inline-block text-primary min-w-[180px] sm:min-w-[250px] md:min-w-[320px] text-left">
+        <span className="block text-primary min-w-[180px] sm:min-w-[250px] md:min-w-[320px] text-center">
           {currentText}
           <span className="animate-pulse">|</span> {/* Blinking cursor */}
         </span>

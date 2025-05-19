@@ -17,7 +17,6 @@ import { ai } from "@/ai/genkit";
 import { z } from "genkit";
 import { technicalTags } from "@/config/technical-tags"; // Importar el glosario
 import type { TokenUsage } from "@/types/analysis";
-import type { PromptEngineeringMode } from "@/types/prompt-engineering";
 
 const GenerateSuggestedPromptInputSchema = z.object({
   originalPrompt: z.string().describe("El prompt original a mejorar."),
@@ -94,85 +93,87 @@ const generateSuggestedPromptGenkitPrompt = ai.definePrompt({
   name: "generateSuggestedPromptWithLinkedTagsPrompt",
   input: { schema: InternalPromptInputSchema }, // Usar el esquema interno
   output: { schema: GenerateSuggestedPromptLLMOutputSchema }, // LLM generates this
-  prompt: `Eres ingeniero de prompts, experto en refinar prompts para tareas relacionadas con la codificación. Eres detallista y analisas detenidamente con el objetivo de mejorar el prompt original del usuario para que sea significativamente más efectivo para un asistente de codificación de IA. Generarás DOS versiones del prompt mejorado, ambas en ESPAÑOL: un "Prompt Sugerido Conciso" y un "Prompt Sugerido Elaborado".
+  prompt: `You are a prompt engineer, expert in refining prompts for coding-related tasks. You are detail-oriented and will analyze carefully with the goal of improving the user’s original prompt so that it becomes significantly more effective for an AI coding assistant. You will generate TWO versions of the improved prompt: a “Concise Suggested Prompt” and a “Elaborated Suggested Prompt.”
 
-Modo de Prompt Engineering seleccionado: {{promptMode}}
+Selected Prompt Engineering Mode: {{promptMode}}
 
 {{#if isChainOfThoughtMode}}
-# Instrucciones específicas para Chain-of-Thought (CoT)
-Aplica la técnica de Chain-of-Thought (CoT) en ambas versiones del prompt. Esto significa que debes inducir al modelo a exponer paso a paso su razonamiento antes de dar una respuesta final. Incluye frases como "Pensemos paso a paso" o "Analicemos esto por etapas" para guiar al modelo a través de un proceso de razonamiento explícito.
+# Specific Instructions for Chain-of-Thought (CoT)
+Apply the Chain-of-Thought (CoT) technique in both prompt versions. This means you must induce the model to expose its reasoning step by step before giving a final answer. Include phrases like “Let’s think step by step” or “Let’s analyze this in stages” to guide the model through an explicit reasoning process.
 {{/if}}
 
 {{#if isFewShotMode}}
-# Instrucciones específicas para Few-Shot Prompting
-Aplica la técnica de Few-Shot Prompting en ambas versiones del prompt. Esto implica proporcionar varios ejemplos ("shots") de input-output dentro del prompt para que el modelo aprenda el formato, estilo y lógica de la tarea. Incluye 2-3 ejemplos concretos que muestren el tipo de respuesta esperada.
+# Specific Instructions for Few-Shot Prompting
+Apply the Few-Shot Prompting technique in both prompt versions. This involves providing several input–output examples (“shots”) within the prompt so that the model learns the expected format, style, and logic of the task. Include 2–3 concrete examples that show the type of response expected.
 {{/if}}
 
 {{#if isRetrievalAugmentedMode}}
-# Instrucciones específicas para Retrieval-Augmented Generation (RAG)
-Aplica la técnica de Retrieval-Augmented Generation (RAG) en ambas versiones del prompt. Esto implica incorporar fragmentos relevantes de conocimiento (como documentación, especificaciones o mejores prácticas) directamente en el prompt para proporcionar contexto adicional y mejorar la precisión de la respuesta.
+# Specific Instructions for Retrieval-Augmented Generation (RAG)
+Apply the Retrieval-Augmented Generation (RAG) technique in both prompt versions. This involves incorporating relevant knowledge snippets (such as documentation, specifications, or best practices) directly into the prompt to provide additional context and improve response accuracy.
 {{/if}}
 
 {{#if isZeroShotMode}}
-# Instrucciones específicas para Zero-Shot Prompting
-Aplica la técnica de Zero-Shot Prompting en ambas versiones del prompt. Esto significa crear instrucciones claras y directas sin ejemplos previos, confiando en la capacidad del modelo para comprender y ejecutar la tarea basándose únicamente en la instrucción proporcionada.
+# Specific Instructions for Zero-Shot Prompting
+Apply the Zero-Shot Prompting technique in both prompt versions. This means creating clear and direct instructions without prior examples, relying on the model’s ability to understand and execute the task based solely on the instruction provided.
 {{/if}}
 
 {{#if isSelfConsistencyMode}}
-# Instrucciones específicas para Self-Consistency Prompting
-Aplica la técnica de Self-Consistency Prompting en ambas versiones del prompt. Esto implica generar múltiples cadenas de razonamiento (vías de pensamiento) y seleccionar la respuesta más consistente. Incluye instrucciones para que el modelo considere diferentes enfoques para resolver el problema y luego converja en la solución más robusta.
+# Specific Instructions for Self-Consistency Prompting
+Apply the Self-Consistency Prompting technique in both prompt versions. This involves generating multiple chains of reasoning (thought paths) and selecting the most consistent answer. Include instructions for the model to consider different approaches to solve the problem and then converge on the most robust solution.
 {{/if}}
 
 {{#if isTreeOfThoughtsMode}}
-# Instrucciones específicas para Tree-of-Thoughts (ToT)
-Aplica la técnica de Tree-of-Thoughts (ToT) en ambas versiones del prompt. Esto implica estructurar el razonamiento como un árbol donde en cada nodo se generan varias "ideas" (pensamientos), se evalúan y se exploran las ramas más prometedoras. Incluye instrucciones para que el modelo considere múltiples caminos de solución, evalúe cada uno y seleccione el más adecuado.
+# Specific Instructions for Tree-of-Thoughts (ToT)
+Apply the Tree-of-Thoughts (ToT) technique in both prompt versions. This involves structuring reasoning as a tree where at each node several “ideas” (thoughts) are generated, evaluated, and the most promising branches explored. Include instructions for the model to consider multiple solution paths, evaluate each one, and select the most suitable.
 {{/if}}
 
 {{#if isAutoPromptingMode}}
-# Instrucciones específicas para Auto-Prompting
-Aplica la técnica de Auto-Prompting en ambas versiones del prompt. Esto implica generar y evaluar automáticamente múltiples versiones de prompts optimizados para la tarea. Incluye instrucciones para que el modelo reformule el prompt original de diferentes maneras y seleccione la versión que probablemente produzca los mejores resultados.
+# Specific Instructions for Auto-Prompting
+Apply the Auto-Prompting technique in both prompt versions. This involves automatically generating and evaluating multiple optimized prompt versions for the task. Include instructions for the model to reformulate the original prompt in different ways and select the version most likely to produce the best results.
 {{/if}}
-Tu salida DEBE ser un objeto JSON que se adhiera al esquema de salida definido (conciseSuggestedPrompt, elaboratedSuggestedPrompt). NO incluyas el campo 'usage' en tu respuesta JSON.
 
-Aquí tienes un glosario de atributos técnicos de calidad. Revísalos cuidadosamente.
+Your output MUST be a JSON object adhering to the defined schema (conciseSuggestedPrompt, elaboratedSuggestedPrompt). DO NOT include the ‘usage’ field in your JSON response.  
 
-Glosario Técnico:
-{{#each technicalTags}}
-- ID: {{this.id}}, Nombre: "{{this.name}}", Descripción: "{{this.description}}" (Categoría: {{this.category}})
+Here is a technical quality attributes glossary. Review it carefully.
+
+Technical Glossary:  
+{{#each technicalTags}}  
+- ID: {{this.id}}, Name: “{{this.name}}”, Description: “{{this.description}}” (Category: {{this.category}})  
 {{/each}}
 
-Prompt Original del Usuario:
+Automatically detect the language of the following prompt and respond in that same language.
+User’s Original Prompt:  
 {{{originalPrompt}}}
 
-Ahora, proporciona las dos versiones del prompt mejorado en ESPAÑOL, basadas en el prompt original de arriba:
+Now, provide the two improved prompt versions in the language of the original prompt, based on the user’s original prompt above:
 
-1.  **Prompt Sugerido Conciso (en ESPAÑOL)**:
-    Reescribe el prompt original para que sea más claro, específico y directamente accionable. Enfócate en la concisión.
-    Al generar esta versión concisa, considera activamente qué atributos del Glosario Técnico mejorarían la solicitud original e incorpóralos estratégicamente donde sea apropiado para añadir claridad y especificar expectativas de calidad. El objetivo es producir un prompt que, si fuera evaluado por un sistema de puntuación de prompts (0-100 basado en claridad, especificidad y uso efectivo de tags), obtendría una alta puntuación. Quizás reflejando sutilmente la complejidad (por ejemplo, incluyendo más tags técnicos si la tarea es compleja y se beneficiaría de ellos).
-    Si utilizas un término en este prompt conciso que corresponda directamente a un 'nombre' del Glosario Técnico (o una variación muy cercana que mantenga el mismo significado), DEBES formatear ese término como un enlace Markdown: \`[ElTérminoComoSeUsa](glossary://el_id_del_tag)\`. Por ejemplo, si 'diseño adaptable' (id: 'responsive') es relevante y se usa, escríbelo como \`[diseño adaptable](glossary://responsive)\`.
+1. **Concise Suggested Prompt (in the prompt’s language):**  
+   Improve the original prompt to make it more effective, specific, and directly actionable. Focus on achieving the best results.  
+   When generating this concise version, actively consider which attributes from the Technical Glossary would enhance the original request and incorporate them strategically where appropriate to add clarity and specify quality expectations. The goal is to produce a prompt that, if evaluated by a prompt-scoring system (0–100 based on success likelihood, specificity, and effective use of tags), would achieve a high score—perhaps subtly reflecting complexity (for example, by including more technical tags if the task is complex and would benefit from them).  
+   If you use a term in this concise prompt that directly matches a 'name' in the Technical Glossary (or a very close variation retaining the same meaning), YOU MUST format that term as a Markdown link: \`[TermAsUsed](glossary://tag-id)\`. For example, if “responsive design” (id: “responsive”) is relevant and used, write it as \`[responsive design](glossary://responsive)\`.
 
-2.  **Prompt Sugerido Elaborado (en ESPAÑOL)**:
-    Crea una versión altamente detallada y cuidadosamente elaborada del prompt siguiendo principios profesionales de ingeniería de prompts. Esta versión debe estar estructurada en secciones claras usando encabezados Markdown:
-    # 1. Contexto / Rol
-    (Define al modelo quién es y cuál es su objetivo)
-    # 2. Tarea específica
-    (Explica de forma clara qué quieres que haga)
-    # 3. Detalles y requisitos
-    (Añade datos técnicos, lenguajes, frameworks, criterios de calidad, etc. En esta sección, DEBERÍAS incorporar estratégicamente atributos técnicos de calidad relevantes del Glosario Técnico para especificar expectativas. Sin embargo, para ESTE prompt elaborado, NO uses el formato de enlace Markdown \`[Término](glossary://tag_id)\`. Simplemente usa los términos de forma natural como parte de tus requisitos detallados.)
-    # 4. Formato de salida
-    (Especifica cómo quieres recibir la respuesta: JSON, lista, código, texto con secciones…)
-    # 5. Restricciones
-    (Limita la extensión, el tono, el estilo, o cualquier otro aspecto)
-    # 6. Ejemplo de uso
-    (Si no aplica, no añadas esta sección)
+2. **Elaborated Suggested Prompt (in the prompt’s language):**  
+   Create a highly detailed and carefully crafted version of the prompt following professional prompt engineering principles. This version must be structured into clear sections and thoroughly analyzed to maximize effectiveness, you may use Markdown:  
+   # 1. Context / Role  
+   (Define who the model is and its objective)  
+   # 2. Specific Task  
+   (Clearly explain what you want it to do)  
+   # 3. Details and Requirements  
+   (Add technical data, languages, frameworks, quality criteria, etc. In this section, you SHOULD strategically incorporate relevant technical quality attributes from the Glossary to specify expectations. However, for THIS elaborated prompt, DO NOT use Markdown link format \`[Term](glossary://tag_id)\`. Simply use the terms naturally as part of your detailed requirements.)  
+   # 4. Output Format  
+   (Specify how you want to receive the response: JSON, list, code, text with sections…)  
+   # 5. Constraints  
+   (Limit length, tone, style, or any other aspect)  
+   # 6. Usage Example  
+   (If not applicable, do not include this section)
 
-    Al generar esta **Sugerencia Elaborada**, considera la complejidad implícita de la tarea descrita en el prompt original.
-    - Si la tarea parece **sencilla o de muy baja complejidad**, la sugerencia elaborada puede ser muy breve, enfocándose solo en las secciones más críticas o incluso indicando que la "Sugerencia Concisa" podría ser suficiente.
-    - Si la tarea parece de **baja complejidad**, la sugerencia elaborada debe ser completa pero concisa, cubriendo las secciones de forma esencial.
-    - Si la tarea parece de **complejidad moderada**, la sugerencia elaborada debe ser más detallada, especialmente en "Detalles y requisitos" y "Ejemplos". Asegúrate de que los "Detalles y requisitos" incorporen conceptos clave del glosario de forma natural.
-    - Si la tarea parece **muy compleja o extensa**, la sugerencia elaborada debería enfocarse en guiar al usuario sobre cómo descomponer la solicitud original en una secuencia de prompts más pequeños y manejables. Puede incluso delinear cuáles podrían ser estos sub-prompts, sugiriendo un enfoque paso a paso. En este caso, la "Sugerencia Elaborada" se convierte en una especie de "meta-prompt" que aconseja sobre la estrategia de prompting para tareas complejas.
+   When generating this **Elaborated Suggestion**, consider the implicit complexity of the task described in the original prompt.  
+   - If the task seems **very low complexity or trivial**, the elaborated suggestion can be very brief, focusing only on the most critical sections or even indicating that the “Concise Suggestion” may suffice.  
+   - If the task seems **low complexity**, the elaborated suggestion should be complete but concise, covering the sections essentially.  
+   - If the task seems **moderately complex**, the elaborated suggestion should be more detailed, especially in “Details and Requirements” and “Examples.” Ensure the “Details and Requirements” incorporate key glossary concepts naturally.  
+   - If the task seems **very complex or extensive**, the elaborated suggestion should focus on guiding the user on how to decompose the original request into a sequence of smaller, manageable prompts. It may even outline what those sub-prompts could be, suggesting a step-by-step approach. In this case, the “Elaborated Suggestion” becomes a sort of “meta-prompt” advising on prompting strategy for complex tasks.
 
-    El objetivo para este prompt elaborado es producir un prompt autocontenido y altamente efectivo que un usuario podría copiar y pegar para obtener los mejores resultados posibles de un asistente de codificación de IA, o guiarlo en cómo abordar tareas muy grandes. Puede ser más largo y prescriptivo que la versión concisa.
+   The goal for this elaborated prompt is to produce a self-contained, highly effective prompt that a user could copy and paste to get the best possible results from an AI coding assistant or guide them on how to tackle very large tasks. It may be longer and more prescriptive than the concise version.
 `,
 });
 

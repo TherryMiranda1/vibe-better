@@ -31,7 +31,7 @@ const ScorePromptLLMOutputSchema = z.object({
   explanation: z
     .string()
     .describe(
-      "Explanation of the assigned score, describing the prompt quality and how the score was determined, considering its complexity. In Spanish."
+      "Explanation of the assigned score, describing the prompt quality and how the score was determined, considering its complexity."
     ),
 });
 
@@ -50,16 +50,17 @@ const scorePromptPrompt = ai.definePrompt({
   name: "scorePromptPrompt",
   input: { schema: ScorePromptInputSchema },
   output: { schema: ScorePromptLLMOutputSchema }, // LLM generates this
-  prompt: `You are an expert in evaluating AI prompts. You will receive a prompt and assign a score from 0 to 100 based on the clarity and specificity of the prompt.  
-Your output MUST be a JSON object that adheres to the defined output schema (score, explanation). DO NOT include the 'usage' field in your JSON response.
+  prompt: `You are an expert in evaluating AI prompts. You will receive a prompt and assign a score from 0 to 100 based on the prompt’s clarity, specificity, and effectiveness.  
+Your output MUST be a JSON object that adheres to the defined output schema (score, explanation). DO NOT include the ‘usage’ field in your JSON response.  
 
-When assigning the score, consider the effectiveness of the prompt *in relation to its apparent complexity*.
-- A good prompt for a **simple** task should be clear and direct.
+When assigning the score, consider the effectiveness of the prompt *in relation to its apparent complexity*.  
+- A good prompt for a **simple** task should be clear and direct.  
 - A good prompt for a **complex** task should not only be clear and specific but also demonstrate an understanding of the task’s scope. This could be reflected in including sufficient details, suggesting an appropriate structure, or implicitly acknowledging the need for breakdown if the original prompt is too ambitious for a single step. A very short prompt for a clearly complex task might receive a lower score if it lacks the necessary detail for an AI to succeed. Conversely, an overly verbose prompt for a very simple task could also lose points for lack of conciseness and clarity.
 
-Provide a detailed explanation for the score IN SPANISH, including how each factor (clarity, specificity, use of tags, appropriateness to task complexity) influenced the final score.
+Provide a detailed explanation for the score, including how each factor (clarity, specificity, effectiveness, appropriateness to complexity) influenced the final score.
 
-Prompt to evaluate:
+Automatically detect the language of the following prompt and respond in that same language.
+Prompt to evaluate:  
 {{{prompt}}}
 `,
 });
