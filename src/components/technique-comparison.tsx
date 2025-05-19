@@ -34,9 +34,9 @@ const techniques: TechniqueData[] = [
     tokenUsage: 3,
     implementation: 2,
     bestFor: [
-      "Problemas matemáticos",
-      "Razonamiento paso a paso",
-      "Explicaciones detalladas",
+      "Math problems",
+      "Step-by-step reasoning",
+      "Detailed explanations",
     ],
   },
   {
@@ -47,9 +47,9 @@ const techniques: TechniqueData[] = [
     tokenUsage: 4,
     implementation: 1,
     bestFor: [
-      "Clasificación",
-      "Tareas con pocos ejemplos disponibles",
-      "Aprendizaje rápido",
+      "Classification",
+      "Tasks with few examples available",
+      "Rapid learning",
     ],
   },
   {
@@ -60,9 +60,9 @@ const techniques: TechniqueData[] = [
     tokenUsage: 4,
     implementation: 5,
     bestFor: [
-      "Acceso a información actualizada",
-      "Respuestas basadas en hechos",
-      "Reducción de alucinaciones",
+      "Access to up-to-date information",
+      "Fact-based answers",
+      "Hallucination reduction",
     ],
   },
   {
@@ -73,9 +73,9 @@ const techniques: TechniqueData[] = [
     tokenUsage: 1,
     implementation: 1,
     bestFor: [
-      "Tareas simples",
-      "Interacciones rápidas",
-      "Cuando no se dispone de ejemplos",
+      "Simple tasks",
+      "Quick interactions",
+      "When no examples are available",
     ],
   },
   {
@@ -86,9 +86,9 @@ const techniques: TechniqueData[] = [
     tokenUsage: 5,
     implementation: 3,
     bestFor: [
-      "Tareas de razonamiento complejo",
-      "Verificación de respuestas",
-      "Problemas matemáticos avanzados",
+      "Complex reasoning tasks",
+      "Answer verification",
+      "Advanced math problems",
     ],
   },
   {
@@ -99,9 +99,9 @@ const techniques: TechniqueData[] = [
     tokenUsage: 5,
     implementation: 4,
     bestFor: [
-      "Problemas de múltiples pasos",
-      "Planificación",
-      "Exploración de soluciones alternativas",
+      "Multi-step problems",
+      "Planning",
+      "Exploring alternative solutions",
     ],
   },
   {
@@ -112,9 +112,9 @@ const techniques: TechniqueData[] = [
     tokenUsage: 4,
     implementation: 5,
     bestFor: [
-      "Optimización de prompts",
-      "Automatización",
-      "Experimentación a gran escala",
+      "Prompt optimization",
+      "Automation",
+      "Large-scale experimentation",
     ],
   },
 ];
@@ -160,7 +160,7 @@ const TechniqueComparison = () => {
     <div className="glass-card max-w-7xl mx-auto rounded-xl p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <h3 className="text-2xl font-bold text-cyan">
-          Comparación de Técnicas
+          Technique Comparison
         </h3>
       </div>
 
@@ -168,12 +168,12 @@ const TechniqueComparison = () => {
         <Table className="min-w-full">
           <TableHeader>
             <TableRow className="border-white/10">
-              <TableHead className="text-cyan w-[180px]">Técnica</TableHead>
-              <TableHead className="text-cyan">Complejidad</TableHead>
-              <TableHead className="text-cyan">Efectividad</TableHead>
-              <TableHead className="text-cyan">Uso de Tokens</TableHead>
-              <TableHead className="text-cyan">Implementación</TableHead>
-              <TableHead className="text-cyan">Mejor para</TableHead>
+              <TableHead className="text-cyan w-[180px]">Technique</TableHead>
+              <TableHead className="text-cyan">Complexity</TableHead>
+              <TableHead className="text-cyan">Effectiveness</TableHead>
+              <TableHead className="text-cyan">Token Usage</TableHead>
+              <TableHead className="text-cyan">Implementation</TableHead>
+              <TableHead className="text-cyan">Best for</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

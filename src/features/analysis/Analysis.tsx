@@ -284,8 +284,8 @@ const Analysis = () => {
         );
         if (!streamTerminatedHandledRef.current) {
           toast({
-            title: "Error de Análisis",
-            description: "Ocurrió un error al procesar los datos del análisis.",
+            title: "Error processing analysis data",
+            description: "An error occurred while processing the analysis data.",
             variant: "destructive",
           });
         }
@@ -304,9 +304,9 @@ const Analysis = () => {
         streamTerminatedHandledRef.current = true;
 
         toast({
-          title: "Error de Conexión con el Servidor",
+          title: "Error with Server Connection",
           description:
-            "No se pudo completar el análisis debido a un problema de conexión. Por favor, revisa tu conexión o inténtalo más tarde.",
+            "The analysis could not be completed due to a connection problem. Please check your connection or try again later.",
           variant: "destructive",
         });
 
@@ -317,7 +317,7 @@ const Analysis = () => {
               finalState[key].isLoading = false;
               if (!finalState[key].content) {
                 finalState[key].content =
-                  `Error: No se pudo completar el análisis para "${analysisConfig[key].title}".`;
+                  `Error: Analysis could not be completed for "${analysisConfig[key].title}".`;
               }
             }
           });
@@ -367,12 +367,20 @@ const Analysis = () => {
         (Array.from(activeAnalyses) as AnalysisSectionKey[]).forEach((key) => {
           finalState[key].isLoading = false;
           if (!finalState[key].content && key !== "score") {
-            finalState[key].content = "Análisis no completado o sin datos.";
+            finalState[key].content = "Analysis not completed or no data.";
           }
         });
 
         return finalState;
       });
+
+      if (activeAnalyses.has("score") && analysisResults.score?.content) {
+        resultsToSave["score"] = analysisResults.score.content;
+      } else {
+        resultsToSave["score"] = "";
+      }
+
+      console.log({allMandatoryComplete, promptText})
 
       if (allMandatoryComplete && promptText.trim()) {
         try {
@@ -385,18 +393,18 @@ const Analysis = () => {
         } catch (error) {
           console.error("Error saving analysis to database:", error);
           toast({
-            title: "Error al guardar",
-            description: "No se pudo guardar el análisis en la base de datos.",
-            variant: "destructive",
+            title: "Error saving analysis",
+            description: "The analysis could not be saved to the database.",
+            variant: "default",
           });
         }
       } else if (!allMandatoryComplete && !hasSavedThisStreamRef.current) {
         if (promptText.trim()) {
           toast({
-            title: "Análisis Incompleto",
+            title: "Analysis Incomplete",
             description:
-              "Algunas secciones no se completaron, no se guardará en el historial.",
-            variant: "destructive",
+              "Some sections were not completed, it will not be saved in the history.",
+            variant: "default",
           });
         }
       }
