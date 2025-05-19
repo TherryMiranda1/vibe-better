@@ -541,7 +541,7 @@ const Analysis = () => {
                     onClick={(e) => e.preventDefault()}
                     className="flex items-center justify-center gap-2 bg-white text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                   >
-                    Optimizar <Zap />
+                    Optimize <Zap />
                   </button>
                 </SignInButton>
               </SignedOut>

@@ -17,6 +17,21 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Vibe Better",
   description: "Optimize your coding prompts with AI analysis.",
+  openGraph: {
+    title: "Vibe Better",
+    description: "Optimize your coding prompts with AI analysis.",
+    type: "website",
+    url: "https://vibebetter.com",
+    siteName: "Vibe Better",
+    images: [
+      {
+        url: "https://res.cloudinary.com/dtlaxm8gi/image/upload/v1747673196/og-image_jeyooo.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Vibe Better",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
