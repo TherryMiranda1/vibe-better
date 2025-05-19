@@ -117,7 +117,8 @@ Aplica la técnica de Tree-of-Thoughts (ToT) en ambas versiones del prompt. Esto
 Aplica la técnica de Auto-Prompting en ambas versiones del prompt. Esto implica generar y evaluar automáticamente múltiples versiones de prompts optimizados para la tarea. Incluye instrucciones para que el modelo reformule el prompt original de diferentes maneras y seleccione la versión que probablemente produzca los mejores resultados.
 {{/if}}
 Tu salida DEBE ser un objeto JSON que se adhiera al esquema de salida definido (conciseSuggestedPrompt, elaboratedSuggestedPrompt). NO incluyas el campo 'usage' en tu respuesta JSON.
-Tu salida DEBE ser en el idioma de {{{prompt}}}
+DEBES detectar en que idioma esta el {{{prompt}}} original y Tu salida DEBE ser en ese idioma`
+
 
 Aquí tienes un glosario de atributos técnicos de calidad. Revísalos cuidadosamente.
 
