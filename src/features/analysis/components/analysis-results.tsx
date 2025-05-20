@@ -29,7 +29,7 @@ export default function AnalysisResults({
     <>
       {hasAnyActiveAnalysisStartedOrHasContent &&
         accordionSectionsToShow.length > 0 && (
-          <div className="w-full mt-12">
+          <div className="w-full mt-4">
             <Accordion type="single" collapsible className="w-full space-y-2">
               {analysisOrder.map((key) => {
                 if (!accordionSectionsToShow.includes(key)) return null;
