@@ -105,15 +105,15 @@ export function UserPromptsSection({
     try {
       await deleteUserPrompt(selectedPrompt.id);
       toast({
-        title: "Prompt eliminado",
-        description: "Tu prompt ha sido eliminado correctamente.",
+        title: "Prompt deleted",
+        description: "Your prompt has been deleted successfully.",
       });
       fetchUserPrompts();
     } catch (err) {
       console.log("Error deleting prompt:", err);
       toast({
         title: "Error",
-        description: "Hubo un error al eliminar el prompt. Inténtalo de nuevo.",
+        description: "An error occurred while deleting the prompt. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -157,7 +157,7 @@ export function UserPromptsSection({
       </div>
 
       {userPrompts.length === 0 ? (
-        <div className="flex items-center justify-center p-4 text-center py-8 border rounded-lg bg-muted/20">
+        <div className="flex flex-wrap gap-2 items-center justify-center p-4 text-center py-8 border rounded-lg bg-muted/20">
           <p className="mb-4">You don't have any personalized prompts yet.</p>
           <Button
             variant="outline"

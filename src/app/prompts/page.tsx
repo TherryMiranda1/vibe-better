@@ -263,8 +263,8 @@ const PromptsPage = () => {
         ]}
       />
       <PageHeader
-        title="Biblioteca de Prompts"
-        description="Explora nuestra colección de prompts predefinidos y crea tus propios prompts personalizados."
+        title="Prompts Collection"
+        description="Explore our collection of predefined prompts and create your own personalized prompts."
       />
 
       <Tabs defaultValue="predefined">
