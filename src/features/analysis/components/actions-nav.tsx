@@ -12,6 +12,7 @@ import { LoaderPinwheel, Settings, Zap } from "lucide-react";
 import type { AnalysisSectionKey } from "@/types/analysis";
 import { analysisConfig } from "@/config/analysis-config";
 import { Dispatch, SetStateAction } from "react";
+import Loader from "@/components/loader/loader";
 
 export default function ActionsNav({
   isAnalyzing,
@@ -43,15 +44,14 @@ export default function ActionsNav({
           disabled={isAnalyzing || !promptText.trim()}
         >
           {isAnalyzing ? (
-            <>
-              <LoaderPinwheel className="animate-spin text-primary" /> Improving
-              your prompt...
-            </>
+            <span className="flex items-center gap-2">
+              <Loader size="small" /> Improving your prompt...
+            </span>
           ) : (
-            <>
+            <span className="flex items-center gap-2">
               Optimize
               <Zap className="w-5 h-5 text-primary" />
-            </>
+            </span>
           )}
         </button>
       </SignedIn>
@@ -121,7 +121,7 @@ export default function ActionsNav({
           <div className="p-1">
             <Button
               onClick={handleApplySettings}
-              className="w-full"
+              className="w-full text-foreground"
               disabled={isAnalyzing}
             >
               Apply

@@ -45,6 +45,7 @@ import type {
 } from "@/types/analysis";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
 import { PageHeader } from "@/components/seo/PageHeader";
+import Loader from "@/components/loader/loader";
 
 // Helper functions for formatting analysis content
 const getComplexityColorClass = (level: string): string => {
@@ -80,32 +81,6 @@ const DimensionDisplay = ({
     <p className="text-xs text-muted-foreground mt-1">{data.criteria}</p>
   </div>
 );
-
-const isContentError = (text: string | undefined): boolean => {
-  if (!text) return false;
-  const lowerText = text.toLowerCase();
-  const errorMessages = [
-    "no se pudo obtener respuesta",
-    "error en genkit",
-    "ocurrió un error al analizar la sección",
-    "error: no se pudo completar el análisis para",
-    "análisis no completado o sin datos",
-  ];
-
-  if (errorMessages.some((msg) => lowerText.includes(msg))) {
-    return true;
-  }
-
-  if (text.trim().startsWith("{") && text.trim().endsWith("}")) {
-    try {
-      const parsed = JSON.parse(text);
-      return !!parsed.error;
-    } catch (e) {
-      // Not a valid JSON or not an error object
-    }
-  }
-  return false;
-};
 
 const MyAnalysis = () => {
   const [analyses, setAnalyses] = useState<AnalysisResult[]>([]);
@@ -170,8 +145,8 @@ const MyAnalysis = () => {
 
       <SignedIn>
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex justify-center items-center h-full">
+            <Loader size="large" />
           </div>
         ) : analyses.length > 0 ? (
           <div className="grid grid-cols-1 gap-6">
@@ -500,7 +475,10 @@ const MyAnalysis = () => {
             <p className="text-muted-foreground mb-6">
               When you analyze prompts, they will be automatically saved here.
             </p>
-            <Button className="text-foreground font-bold" onClick={() => router.push("/")}>
+            <Button
+              className="text-foreground font-bold"
+              onClick={() => router.push("/")}
+            >
               Create a new analysis
             </Button>
           </div>

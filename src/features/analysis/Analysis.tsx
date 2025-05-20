@@ -127,6 +127,33 @@ const Analysis = () => {
     updateUserCredits(userCredits);
   };
 
+  const handleSaveAnalysis = async () => {
+    const results = {
+      complexity: analysisResults.complexity.content,
+      dependencies: analysisResults.dependencies.content,
+      features: analysisResults.features.content,
+      suggestedPrompt: analysisResults.suggestedPrompt.content,
+      nextSteps: analysisResults.nextSteps.content,
+      score: analysisResults.score.content,
+    };
+    console.log({ results });
+    try {
+      await saveAnalysisToDb({
+        prompt: promptText,
+        activeAnalyses: Array.from(activeAnalyses),
+        resultsContent: results,
+        title: `Analysis ${new Date().toLocaleString()}`,
+      });
+    } catch (error) {
+      console.error("Error saving analysis to database:", error);
+      toast({
+        title: "Error saving analysis",
+        description: "The analysis could not be saved to the database.",
+        variant: "default",
+      });
+    }
+  };
+
   const handleOptimizePrompt = async (e: FormEvent) => {
     e.preventDefault();
     if (!promptText.trim()) {
@@ -332,7 +359,7 @@ const Analysis = () => {
       }, 100);
     };
 
-    es.addEventListener("close", async (event) => {
+    es.addEventListener("close", async () => {
       if (streamTerminatedHandledRef.current) {
         if (eventSourceRef.current) {
           eventSourceRef.current.close();
@@ -341,24 +368,6 @@ const Analysis = () => {
         return;
       }
       streamTerminatedHandledRef.current = true;
-
-      // Get the current analysis results directly from state
-      // This ensures we have the most up-to-date values
-      const resultsToSave: Record<string, string | undefined> = {};
-      let allMandatoryComplete = true;
-
-      // Check for mandatory sections and populate results to save
-      analysisOrder.forEach((key) => {
-        if (activeAnalyses.has(key) && analysisResults[key]?.content) {
-          resultsToSave[key] = analysisResults[key].content;
-        } else if (
-          mandatoryKeys.has(key) &&
-          activeAnalyses.has(key) &&
-          !analysisResults[key]?.content
-        ) {
-          allMandatoryComplete = false;
-        }
-      });
 
       // Update the UI state
       setAnalysisResults((currentResults) => {
@@ -374,39 +383,15 @@ const Analysis = () => {
         return finalState;
       });
 
-      if (activeAnalyses.has("score") && analysisResults.score?.content) {
-        resultsToSave["score"] = analysisResults.score.content;
-      } else {
-        resultsToSave["score"] = "";
-      }
-
-      console.log({ allMandatoryComplete, promptText });
-
-      if (allMandatoryComplete && promptText.trim()) {
-        try {
-          await saveAnalysisToDb({
-            prompt: promptText,
-            activeAnalyses: Array.from(activeAnalyses),
-            resultsContent: resultsToSave,
-            title: `Analysis ${new Date().toLocaleString()}`,
-          });
-        } catch (error) {
-          console.error("Error saving analysis to database:", error);
-          toast({
-            title: "Error saving analysis",
-            description: "The analysis could not be saved to the database.",
-            variant: "default",
-          });
-        }
-      } else if (!allMandatoryComplete && !hasSavedThisStreamRef.current) {
-        if (promptText.trim()) {
-          toast({
-            title: "Analysis Incomplete",
-            description:
-              "Some sections were not completed, it will not be saved in the history.",
-            variant: "default",
-          });
-        }
+      if (promptText.trim()) {
+        handleSaveAnalysis();
+      } else if (!hasSavedThisStreamRef.current) {
+        toast({
+          title: "Analysis Incomplete",
+          description:
+            "Some sections were not completed, it will not be saved in the history.",
+          variant: "default",
+        });
       }
       updateUser();
       setIsAnalyzing(false);
@@ -453,10 +438,7 @@ const Analysis = () => {
 
   return (
     <div className="flex z-20 flex-col max-w-2xl w-full items-center mx-auto text-left">
-      <section
-        id="analyze"
-        className="w-full relative mb-4 flex flex-col gap-4"
-      >
+      <section id="analyze" className="w-full relative flex flex-col gap-4">
         <form
           onSubmit={handleOptimizePrompt}
           className="border border-primary bg-card rounded-xl"
