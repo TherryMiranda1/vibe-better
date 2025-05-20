@@ -1,3 +1,5 @@
+import { Prompt } from "@/types/prompts";
+
 export const categories = [
   "API",
   "Algoritmos",
@@ -40,7 +42,7 @@ export const stages = [
 
 export const levels = ["Avanzado", "Intermedio", "Principiante"];
 
-export const prompts = [
+export const prompts: Prompt[] = [
   {
     id: 1,
     template:

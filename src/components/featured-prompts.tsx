@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { prompts } from "@/constants/prompts";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 export function FeaturedPrompts() {
   // Select a few featured prompts (you can customize this selection logic)
   const featuredPromptIds = [1, 6, 8, 10, 12]; // IDs of prompts to feature
-  const featuredPrompts = prompts.filter(prompt => featuredPromptIds.includes(prompt.id));
+  const featuredPrompts = prompts.filter(prompt => featuredPromptIds.includes(Number(prompt.id)));
   
   // Function to copy prompt to clipboard
   const copyPromptToClipboard = (promptText: string) => {

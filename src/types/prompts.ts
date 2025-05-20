@@ -1,7 +1,7 @@
 // Types for the prompts feature
 
 export type Prompt = {
-  id: number;
+  id: number | string; // Puede ser un número para prompts predefinidos o un string (MongoDB ID) para prompts de usuario
   template: string;
   placeholders: string[];
   nivel: string;
@@ -9,6 +9,10 @@ export type Prompt = {
   categoría: string;
   instrucciones: string;
   notas_para_el_uso: string;
+  userId?: string; // ID del usuario si es un prompt personalizado
+  title?: string; // Título opcional para prompts personalizados
+  createdAt?: Date; // Fecha de creación para prompts personalizados
+  updatedAt?: Date; // Fecha de actualización para prompts personalizados
 };
 
 export type FilterState = {

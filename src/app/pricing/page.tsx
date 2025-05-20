@@ -5,7 +5,6 @@ import { PricingTable } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/ui/breadcrumb";
-import { PageHeader } from "@/components/seo/PageHeader";
 
 export const metadata: Metadata = {
   title: "Pricing | Vibe Code Better",
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function PricingPage() {
-  const { orgId } = await auth();
+  const { orgId, userId } = await auth();
 
   const products = await getActiveProductsWithPrices();
 
@@ -26,7 +25,7 @@ export default async function PricingPage() {
             { label: "Pricing", href: "/pricing" },
           ]}
         />
- 
+
         <div className="text-center flex flex-col items-center gap-8 mb-12">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
             Plans for organizations
@@ -36,7 +35,7 @@ export default async function PricingPage() {
             prompts and achieve outstanding results. Invite as many members as
             you want from your organization.
           </p>
-          {!orgId && (
+          {userId && !orgId && (
             <Link
               href="/organizations"
               className="text-lg text-background bg-primary px-6 py-4 font-semibold my-6 rounded-lg max-w-3xl mx-auto"
