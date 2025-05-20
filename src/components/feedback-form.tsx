@@ -88,7 +88,7 @@ export function FeedbackForm() {
 
   if (isSuccess) {
     return (
-      <div className="flex flex-col items-center justify-center p-6 space-y-4 text-center">
+      <div className="flex flex-col items-center justify-center p-6 space-y-4 text-center border bg-card rounded-xl shadow-sm">
         <h2 className="text-2xl font-bold text-primary">
           Thank You for Your Feedback!
         </h2>
@@ -117,7 +117,7 @@ export function FeedbackForm() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-card rounded-xl shadow-sm">
+    <div className="max-w-2xl mx-auto p-6 bg-card rounded-xl shadow-sm border ">
       <h2 className="text-2xl font-bold mb-6 text-center">
         Share Your Feedback
       </h2>

@@ -61,7 +61,7 @@ export function AppHeader() {
       {/* Modal de confirmación de compra exitosa */}
       <DynamicCheckoutSuccessModal />
 
-      <div className="max-w-6xl px-2 py-2 mx-auto border-primary/10 border rounded-xl bg-card/90 backdrop-blur-sm flex justify-between items-center">
+      <div className="max-w-7xl px-2 py-2 mx-auto border-primary/10 border rounded-xl bg-card/90 backdrop-blur-sm flex justify-between items-center">
         <Link href="/" passHref>
           <h1 className="text-xl font-semibold cursor-pointer text-card-foreground hover:text-primary transition-colors">
             <Image
