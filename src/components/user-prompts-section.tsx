@@ -124,7 +124,7 @@ export function UserPromptsSection({
   if (loading && userPrompts.length === 0) {
     return (
       <div className="text-center py-8">
-        Cargando tus prompts personalizados...
+        Loading your personalized prompts...
       </div>
     );
   }
@@ -135,18 +135,18 @@ export function UserPromptsSection({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Mis Prompts Personalizados</h2>
+      <div className="flex flex-wrap gap-2 justify-between items-center">
+        <h2 className="text-2xl font-bold">My Personalized Prompts</h2>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="flex items-center gap-2 text-background ">
               <Plus size={16} />
-              <span>Crear Prompt</span>
+              <span>Create Prompt</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-3xl">
             <DialogHeader>
-              <DialogTitle>Crear Nuevo Prompt</DialogTitle>
+              <DialogTitle>Create New Prompt</DialogTitle>
             </DialogHeader>
             <PromptForm
               onSuccess={handleCreateSuccess}
@@ -158,14 +158,14 @@ export function UserPromptsSection({
 
       {userPrompts.length === 0 ? (
         <div className="text-center py-8 border rounded-lg bg-muted/20">
-          <p className="mb-4">No tienes prompts personalizados todavía.</p>
+          <p className="mb-4">You don't have any personalized prompts yet.</p>
           <Button
             variant="outline"
             onClick={() => setIsCreateDialogOpen(true)}
             className="flex items-center gap-2"
           >
             <Plus size={16} />
-            <span>Crear tu primer prompt</span>
+            <span>Create your first prompt</span>
           </Button>
         </div>
       ) : (

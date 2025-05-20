@@ -63,6 +63,10 @@ textarea:focus {
   outline: none;
   border: none;
 }
+/* Clerk Drawer - Avoid this kind of workarounds */
+.cl-drawerRoot {
+  z-index: 20;
+}
 
 @layer base {
   * {

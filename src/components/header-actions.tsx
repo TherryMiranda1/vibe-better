@@ -8,10 +8,8 @@ import {
 } from "@clerk/nextjs";
 import { UserCredits } from "./user-credits";
 import { Button } from "./ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Zap, Calendar, Package, ChevronDown, CreditCard } from "lucide-react";
-import { getUserCredits } from "@/lib/services/client/userCredits.service";
-import useUserStore from "@/context/store";
 import {
   Popover,
   PopoverContent,
@@ -42,6 +40,7 @@ function SubscriptionMenu() {
   const { isLoaded } = useUser();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
+  const subscriptionLoaded = useRef(false);
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -51,6 +50,7 @@ function SubscriptionMenu() {
       }
 
       try {
+        subscriptionLoaded.current = true;
         const subs = await organization.getSubscriptions();
         setSubscriptions(subs.data as Subscription[]);
       } catch (error) {
@@ -60,7 +60,7 @@ function SubscriptionMenu() {
       }
     };
 
-    if (organization) {
+    if (organization && !subscriptionLoaded.current) {
       fetchSubscriptions();
     } else {
       setLoading(false);
