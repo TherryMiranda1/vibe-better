@@ -1,6 +1,6 @@
 
 # Vibe Code Better - AI Prompt Optimizer
-
+![Image](https://github.com/user-attachments/assets/31424e7d-2443-4508-9a47-ab27388e7a5f)
 Vibe Code Better is a Next.js web application designed to help users refine and optimize their coding-related prompts for Large Language Models (LLMs). By providing detailed analysis and suggestions, it aims to improve the quality of prompts, leading to better code generation and more effective interactions with AI coding assistants.
 
 ## ✨ Features
