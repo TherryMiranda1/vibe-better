@@ -84,6 +84,7 @@ const Analysis = () => {
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [promptEngineeringMode, setPromptEngineeringMode] =
     useState<PromptEngineeringModeConfig>(promptEngineeringModes[0]);
+  const analysisSaved = useRef<boolean>(false);
 
   const [totalTokenUsage, setTotalTokenUsage] = useState<TokenUsage>({
     inputTokens: 0,
@@ -122,21 +123,17 @@ const Analysis = () => {
     }
   }, [searchParams, router]);
 
-  const updateUser = async () => {
-    const userCredits = await getUserCredits();
-    updateUserCredits(userCredits);
-  };
-
-  const handleSaveAnalysis = async () => {
+  const handleSaveAnalysis = async (rawResults: AnalysisSections) => {
+    analysisSaved.current = true;
     const results = {
-      complexity: analysisResults.complexity.content,
-      dependencies: analysisResults.dependencies.content,
-      features: analysisResults.features.content,
-      suggestedPrompt: analysisResults.suggestedPrompt.content,
-      nextSteps: analysisResults.nextSteps.content,
-      score: analysisResults.score.content,
+      complexity: rawResults.complexity.content,
+      dependencies: rawResults.dependencies.content,
+      features: rawResults.features.content,
+      suggestedPrompt: rawResults.suggestedPrompt.content,
+      nextSteps: rawResults.nextSteps.content,
+      score: rawResults.score.content,
     };
-    console.log({ results });
+
     try {
       await saveAnalysisToDb({
         prompt: promptText,
@@ -154,6 +151,12 @@ const Analysis = () => {
     }
   };
 
+  const updateUser = async () => {
+    const userCredits = await getUserCredits();
+
+    updateUserCredits(userCredits);
+  };
+
   const handleOptimizePrompt = async (e: FormEvent) => {
     e.preventDefault();
     if (!promptText.trim()) {
@@ -166,6 +169,7 @@ const Analysis = () => {
     }
 
     setIsAnalyzing(true);
+    analysisSaved.current = false;
     hasSavedThisStreamRef.current = false;
     streamTerminatedHandledRef.current = false;
 
@@ -379,20 +383,13 @@ const Analysis = () => {
             finalState[key].content = "Analysis not completed or no data.";
           }
         });
+        if (!analysisSaved.current) {
+          handleSaveAnalysis(finalState);
+        }
 
         return finalState;
       });
 
-      if (promptText.trim()) {
-        handleSaveAnalysis();
-      } else if (!hasSavedThisStreamRef.current) {
-        toast({
-          title: "Analysis Incomplete",
-          description:
-            "Some sections were not completed, it will not be saved in the history.",
-          variant: "default",
-        });
-      }
       updateUser();
       setIsAnalyzing(false);
 

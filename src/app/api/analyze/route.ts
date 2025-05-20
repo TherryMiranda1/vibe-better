@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
   // Check if user has unlimited plan (Plan User)
   const hasUnlimitedPlan = unlimitedPlan.plan !== null;
-  console.log({ unlimitedPlan, hasUnlimitedPlan });
+
   // If the user has no active subscription, check their organization's credits
   const credits = hasUnlimitedPlan
     ? Infinity
