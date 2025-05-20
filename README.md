@@ -47,6 +47,7 @@ The application offers a suite of tools and analyses to enhance your coding prom
 *   **Language**: TypeScript
 *   **UI**: React, ShadCN UI Components
 *   **Styling**: Tailwind CSS
+*   **Authentication**: Clerk
 *   **AI Integration**: Genkit (for orchestrating calls to AI models)
 *   **Markdown**: `react-markdown` with `@tailwindcss/typography`
 
