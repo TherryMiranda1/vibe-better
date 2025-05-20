@@ -102,8 +102,8 @@ const parseDependencies = (
   text: string
 ): Array<{ name: string; justification?: string }> => {
   const noDepsMessages = [
-    "no se requieren dependencias externas para esta tarea",
-    "se puede realizar con funcionalidades nativas del framework/navegador",
+    "don't require external dependencies",
+    "can be implemented using native framework/browser capabilities",
   ];
   const lowerText = text.toLowerCase().trim();
 
@@ -387,15 +387,15 @@ export default function AnalysisSection({
             </div>
 
             <DimensionDisplay
-              title="Dimensión de Implementación"
+              title="Implementation Dimension"
               data={structuredComplexityContent.dimension}
             />
             <DimensionDisplay
-              title="Generalidad de Implementación"
+              title="Generality of Implementation"
               data={structuredComplexityContent.generality}
             />
             <DimensionDisplay
-              title="Tipo de Dependencias"
+              title="Dependency Type"
               data={structuredComplexityContent.dependencies}
             />
 
@@ -510,7 +510,7 @@ export default function AnalysisSection({
         );
       } else if (content) {
         return (
-          <div className="mt-2 p-3 border border-amber-500/50 rounded-md bg-amber-500/10 text-sm text-amber-700 dark:text-amber-400 flex items-start">
+          <div className="mt-2 p-3 border max-w-2xl border-amber-500/50 rounded-md bg-amber-500/10 text-sm text-amber-700 dark:text-amber-400 flex items-start">
             <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
             <div>
               <p className="font-semibold">
@@ -531,8 +531,8 @@ export default function AnalysisSection({
     if (itemKey === "dependencies" && content) {
       const dependencies = parseDependencies(content);
       const noDepsMessages = [
-        "no se requieren dependencias externas para esta tarea",
-        "se puede realizar con funcionalidades nativas del framework/navegador",
+        "Don't require external dependencies",
+        "can be implemented using native framework/browser capabilities",
       ];
       const lowerContent = content.toLowerCase().trim();
       const isNoDepsMessage = noDepsMessages.some(
@@ -569,7 +569,7 @@ export default function AnalysisSection({
         return (
           <p className="text-sm text-foreground whitespace-pre-wrap mt-2">
             {content ||
-              "No se identificaron dependencias específicas o la respuesta no tuvo el formato esperado."}
+              "No dependencies were identified or the response did not have the expected format."}
           </p>
         );
       }
@@ -613,7 +613,7 @@ export default function AnalysisSection({
         );
       }
       if (features.length === 0) {
-        return (
+        return (  
           <p className="text-sm text-foreground whitespace-pre-wrap mt-2">
             {content || "No se identificaron funcionalidades específicas."}
           </p>

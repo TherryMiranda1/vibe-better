@@ -4,6 +4,7 @@ import type { FormEvent } from "react";
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
+  PromptEngineeringModeConfig,
   promptEngineeringModes,
   type PromptEngineeringMode,
 } from "@/types/prompt-engineering";
@@ -42,6 +43,9 @@ import { getUserCredits } from "@/lib/services/client/userCredits.service";
 import { saveAnalysis as saveAnalysisToDb } from "@/lib/services/client/analysis.service";
 import useUserStore from "@/context/store";
 import AnalysisSection from "@/components/analysis-section";
+import AdvancedMode from "./components/advanced-mode";
+import ActionsNav from "./components/actions-nav";
+import AnalysisResults from "./components/analysis-results";
 
 function getInitialAnalysisState(): AnalysisSections {
   const initialState = {} as Partial<AnalysisSections>;
@@ -79,9 +83,7 @@ const Analysis = () => {
     useState<Set<AnalysisSectionKey>>(allAnalysisKeys);
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
   const [promptEngineeringMode, setPromptEngineeringMode] =
-    useState<PromptEngineeringMode>("zero-shot");
-  const [isPromptEngineeringMenuOpen, setIsPromptEngineeringMenuOpen] =
-    useState(false);
+    useState<PromptEngineeringModeConfig>(promptEngineeringModes[0]);
 
   const [totalTokenUsage, setTotalTokenUsage] = useState<TokenUsage>({
     inputTokens: 0,
@@ -158,7 +160,7 @@ const Analysis = () => {
     }
 
     const analysesQueryParam = Array.from(activeAnalyses).join(",");
-    const url = `/api/analyze?prompt=${encodeURIComponent(promptText)}&analyses=${analysesQueryParam}&promptMode=${promptEngineeringMode}`;
+    const url = `/api/analyze?prompt=${encodeURIComponent(promptText)}&analyses=${analysesQueryParam}&promptMode=${promptEngineeringMode.id}`;
 
     let preflight: Response;
     try {
@@ -290,7 +292,7 @@ const Analysis = () => {
       }
     };
 
-    es.onerror = (error) => {
+    es.onerror = () => {
       setTimeout(() => {
         if (streamTerminatedHandledRef.current) {
           if (eventSourceRef.current) {
@@ -349,6 +351,12 @@ const Analysis = () => {
       analysisOrder.forEach((key) => {
         if (activeAnalyses.has(key) && analysisResults[key]?.content) {
           resultsToSave[key] = analysisResults[key].content;
+        } else if (
+          mandatoryKeys.has(key) &&
+          activeAnalyses.has(key) &&
+          !analysisResults[key]?.content
+        ) {
+          allMandatoryComplete = false;
         }
       });
 
@@ -422,9 +430,10 @@ const Analysis = () => {
     setIsSettingsMenuOpen(false);
   };
 
-  const handlePromptEngineeringModeChange = (mode: PromptEngineeringMode) => {
+  const handlePromptEngineeringModeChange = (
+    mode: PromptEngineeringModeConfig
+  ) => {
     setPromptEngineeringMode(mode);
-    setIsPromptEngineeringMenuOpen(false);
   };
 
   const accordionSectionsToShow = analysisOrder.filter(
@@ -450,9 +459,9 @@ const Analysis = () => {
       >
         <form
           onSubmit={handleOptimizePrompt}
-          className="border bg-card rounded-xl"
+          className="border border-primary bg-card rounded-xl"
         >
-          <div className="absolute top-1 right-1 text-xs text-muted-foreground opacity-50">
+          <div className="absolute top-2 right-2 text-xs text-muted-foreground opacity-50">
             {promptText.length} / 10000
           </div>
           <Textarea
@@ -460,185 +469,43 @@ const Analysis = () => {
             value={promptText}
             rows={6}
             onChange={(e) => setPromptText(e.target.value)}
-            className="p-4 rounded-xl bg-card text-foreground"
+            className="p-4 pt-5 rounded-xl bg-card text-foreground"
             disabled={isAnalyzing}
             maxLength={10000}
           />
 
-          <nav className="flex justify-center items-center gap-2 p-2">
-            <SignedIn>
-              <button
-                type="submit"
-                className="flex items-center bg-white  justify-center gap-2 text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-                disabled={isAnalyzing || !promptText.trim()}
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="animate-spin" /> Improving your
-                    prompt...
-                  </>
-                ) : (
-                  <>
-                    Optimize
-                    <Zap className="w-5 h-5 text-primary" />
-                  </>
-                )}
-              </button>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton
-                mode="modal"
-                fallbackRedirectUrl={
-                  promptText.trim()
-                    ? `/?prompt=${encodeURIComponent(promptText)}`
-                    : "/"
-                }
-              >
-                <button
-                  onClick={(e) => e.preventDefault()}
-                  className="flex items-center justify-center gap-2 bg-white text-background border border px-6 py-2 w-full text-lg rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
-                >
-                  Optimize <Zap />
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <DropdownMenu
-              open={isSettingsMenuOpen}
-              onOpenChange={handleSettingsMenuOpenChange}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-2 hover:bg-primary/10 py-5  rounded-xl"
-                  disabled={isAnalyzing}
-                >
-                  <Settings className="h-6 w-6" />
-                  <span className="sr-only">Analysis Settings</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuLabel>Analysis Settings</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {analysisOrder.map((key) => {
-                  const config = analysisConfig[key];
-                  const isMandatory = mandatoryKeys.has(key);
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={key}
-                      checked={isMandatory || temporaryActiveAnalyses.has(key)}
-                      disabled={isMandatory || isAnalyzing}
-                      onCheckedChange={(checked) => {
-                        if (!isMandatory) {
-                          setTemporaryActiveAnalyses((prev) => {
-                            const newSet = new Set(prev);
-                            if (checked) {
-                              newSet.add(key);
-                            } else {
-                              newSet.delete(key);
-                            }
-                            return newSet;
-                          });
-                        }
-                      }}
-                      onSelect={(e) => e.preventDefault()}
-                    >
-                      {config.title}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-                <DropdownMenuSeparator />
-                <div className="p-1">
-                  <Button
-                    onClick={handleApplySettings}
-                    className="w-full"
-                    disabled={isAnalyzing}
-                  >
-                    Apply
-                  </Button>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </nav>
+          <ActionsNav
+            isAnalyzing={isAnalyzing}
+            promptText={promptText}
+            temporaryActiveAnalyses={temporaryActiveAnalyses}
+            isSettingsMenuOpen={isSettingsMenuOpen}
+            analysisOrder={analysisOrder}
+            mandatoryKeys={mandatoryKeys}
+            setTemporaryActiveAnalyses={setTemporaryActiveAnalyses}
+            handleApplySettings={handleApplySettings}
+            handleSettingsMenuOpenChange={handleSettingsMenuOpenChange}
+          />
         </form>
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="advanced-mode">
-            <AccordionTrigger className="w-full flex items-center justify-between rounded-xl px-4 py-2 hover:bg-muted text-muted-foreground">
-              <span className="font-semibold text-sm">Advanced mode</span>
-            </AccordionTrigger>
-            <AccordionContent className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-4">
-              {promptEngineeringModes.map((mode) => {
-                const Icon = mode.icon;
-                const selected = promptEngineeringMode === mode.id;
-                return (
-                  <button
-                    type="button"
-                    key={mode.id}
-                    onClick={() => handlePromptEngineeringModeChange(mode.id)}
-                    disabled={isAnalyzing}
-                    className={`group flex flex-col items-start gap-2 p-4 rounded-xl border transition-colors w-full h-full shadow-sm
-                            ${selected ? "border-primary bg-primary/10 ring-2 ring-primary" : "border-border bg-card hover:bg-primary/10"}
-                            focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
-                  >
-                    <div
-                      className={`flex items-center justify-center rounded-full p-2 mb-1 ${selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"} transition-colors`}
-                    >
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <span
-                      className={`font-semibold text-xs ${selected ? "text-primary" : "text-foreground"}`}
-                    >
-                      {mode.name}
-                    </span>
-                    <span className="text-xs text-muted-foreground text-left">
-                      {mode.description}
-                    </span>
-                  </button>
-                );
-              })}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <AdvancedMode
+          promptEngineeringModes={promptEngineeringModes}
+          promptEngineeringMode={promptEngineeringMode}
+          handlePromptEngineeringModeChange={handlePromptEngineeringModeChange}
+          isAnalyzing={isAnalyzing}
+        />
       </section>
 
-      {hasAnyActiveAnalysisStartedOrHasContent &&
-        accordionSectionsToShow.length > 0 && (
-          <div className="w-full mt-12">
-            <Accordion type="single" collapsible className="w-full space-y-2">
-              {analysisOrder.map((key) => {
-                if (!accordionSectionsToShow.includes(key)) return null;
-                const section = analysisResults[key];
-                if (!section || !activeAnalyses.has(key)) return null;
-                return (
-                  <AnalysisSection
-                    key={key}
-                    itemKey={key}
-                    title={section.title}
-                    Icon={section.Icon}
-                    content={section.content}
-                    isLoading={section.isLoading}
-                    usage={section.usage}
-                  />
-                );
-              })}
-            </Accordion>
-          </div>
-        )}
-
-      {scoreData && !scoreData.isLoading && scoreData.content && (
-        <ScoreDisplay
-          scoreContent={scoreData.content}
-          isLoading={scoreData.isLoading}
-          usage={scoreData.usage}
-        />
-      )}
-
-      {!isAnalyzing && Number(totalTokenUsage?.totalTokens) > 0 && (
-        <div className="w-full max-w-2xl text-right text-xs text-muted-foreground">
-          Tokens: Input {totalTokenUsage.inputTokens?.toLocaleString() || 0} /
-          Output {totalTokenUsage.outputTokens?.toLocaleString() || 0}
-        </div>
-      )}
+      <AnalysisResults
+        hasAnyActiveAnalysisStartedOrHasContent={
+          hasAnyActiveAnalysisStartedOrHasContent
+        }
+        accordionSectionsToShow={accordionSectionsToShow}
+        analysisOrder={analysisOrder}
+        analysisResults={analysisResults}
+        activeAnalyses={activeAnalyses}
+        scoreData={scoreData}
+        totalTokenUsage={totalTokenUsage}
+        isAnalyzing={isAnalyzing}
+      />
     </div>
   );
 };
