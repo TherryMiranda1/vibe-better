@@ -157,7 +157,7 @@ export function UserPromptsSection({
       </div>
 
       {userPrompts.length === 0 ? (
-        <div className="text-center py-8 border rounded-lg bg-muted/20">
+        <div className="flex items-center justify-center p-4 text-center py-8 border rounded-lg bg-muted/20">
           <p className="mb-4">You don't have any personalized prompts yet.</p>
           <Button
             variant="outline"

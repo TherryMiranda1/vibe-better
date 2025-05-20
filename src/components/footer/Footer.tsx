@@ -10,6 +10,7 @@ export interface FooterLinkItem {
   href: string;
   icon?: LucideIcon;
   isExternal?: boolean;
+  highLight?: boolean;
 }
 
 export interface FooterColumn {
@@ -70,7 +71,10 @@ export default function Footer({
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className={cn(
+            "text-sm text-muted-foreground hover:text-foreground transition-colors",
+            link.highLight && "border border-primary text-primary px-4 py-2 rounded-xl"
+          )}
         >
           {link.name}
           {!link.icon && <ExternalLink className="inline ml-1 h-3 w-3" />}
@@ -82,14 +86,17 @@ export default function Footer({
       <Link
         key={link.name}
         href={link.href}
-        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className={cn(
+          "text-sm text-muted-foreground hover:text-foreground transition-colors",
+          link.highLight && "border border-primary text-primary px-4 py-2 rounded-xl"
+        )}
       >
         {link.name}
       </Link>
     );
   };
 
-  const renderSocialLinks = () => (
+  const renderSocialLinks = () => ( 
     <div className="flex items-center space-x-4">
       {socialLinks?.map((social) => (
         <a

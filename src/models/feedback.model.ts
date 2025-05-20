@@ -1,25 +1,49 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { model, models, Schema, Document } from "mongoose";
+import { FeedbackCategory } from "../types/feedback";
 
 export interface IFeedback extends Document {
-  email: string;
-  name: string;
+  userId: string;
+  rating: number;
+  category: FeedbackCategory;
   message: string;
+  name?: string;
+  email?: string;
+  allowPublic: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const FeedbackSchema = new Schema<IFeedback>(
   {
-    email: {
+    userId: {
+      type: String,
+      index: true,
+      required: true,
+    },
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },
+    category: {
+      type: String,
+      enum: Object.values(FeedbackCategory),
+      required: true,
+    },
+    message: {
       type: String,
       required: true,
     },
     name: {
       type: String,
-      required: true,
     },
-    message: {
+    email: {
       type: String,
+    },
+    allowPublic: {
+      type: Boolean,
+      default: false,
       required: true,
     },
   },
@@ -28,4 +52,5 @@ const FeedbackSchema = new Schema<IFeedback>(
   }
 );
 
-export const Feedback = mongoose.models.Feedback || mongoose.model<IFeedback>("Feedback", FeedbackSchema);
+export const Feedback =
+  models.Feedback || model<IFeedback>("Feedback", FeedbackSchema);

@@ -7,7 +7,6 @@ import { Price, IPrice } from "@/models/price.model";
 import { Customer } from "@/models/customer.model";
 import { Purchase } from "@/models/purchase.model";
 import { Subscriber } from "@/models/subscriber.model";
-import { Feedback, IFeedback } from "@/models/feedback.model";
 import connectToDatabase from "@/lib/db";
 import { userCreditsService } from "./userCredits.service";
 
@@ -480,30 +479,6 @@ const downloadDigitalAsset = async (storagePath: string) => {
   );
 };
 
-const addFeedback = async (feedback: IFeedback) => {
-  await connectToDatabase();
-
-  try {
-    const { email, name, message } = feedback;
-
-    const feedbackData = {
-      email,
-      name,
-      message,
-    };
-
-    await Feedback.create(feedbackData);
-
-    return {
-      success: true,
-      message: "Feedback submitted successfully",
-    };
-  } catch (error) {
-    console.error("Error adding feedback:", error);
-    throw new Error(`Feedback submission failed: ${(error as Error).message}`);
-  }
-};
-
 // Function to save subscribers for free resources
 const saveSubscriber = async (
   email: string,
@@ -572,7 +547,10 @@ async function getPriceById(priceId: string) {
   return Price.findOne({ id: priceId }).lean();
 }
 
-async function checkExistingPurchaseByUserProduct(userId: string, productId: string) {
+async function checkExistingPurchaseByUserProduct(
+  userId: string,
+  productId: string
+) {
   await connectToDatabase();
   return Purchase.findOne({ userId, productId }).lean();
 }
@@ -589,7 +567,6 @@ export const dbAdminService = {
   checkExistingPurchaseBySession,
   getUserIdFromCustomerId,
   downloadDigitalAsset,
-  addFeedback,
   saveSubscriber,
   getPriceById,
   checkExistingPurchaseByUserProduct,

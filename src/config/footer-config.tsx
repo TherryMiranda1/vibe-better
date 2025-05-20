@@ -13,7 +13,7 @@ export const footerData: FooterProps = {
       />
     ),
     description: "Optimize your coding prompts with AI analysis.",
-    copyright: "Todos los derechos reservados.",
+    copyright: "All rights reserved",
     showYear: true,
     brandName: "Vibe Better",
     columns: [
@@ -51,6 +51,13 @@ export const footerData: FooterProps = {
         href: "https://www.youtube.com/@10xdevelopment",
         icon: Youtube,
         isExternal: true,
+      },
+    ],
+    bottomLinks: [
+      {
+        name: "Give Feedback",
+        href: "/feedback",
+        highLight: true,
       },
     ],
     newsletterTitle: "Subscribe to our newsletter",

@@ -51,6 +51,11 @@ export function AppHeader() {
       : []),
   ];
 
+  const onlyMobileNavigationLinks = [
+    ...navigationLinks,
+    { href: "/feedback", label: "Feedback" },
+  ];
+
   return (
     <header className="px-2 sticky top-4 z-20">
       {/* Modal de confirmación de compra exitosa */}
@@ -100,7 +105,7 @@ export function AppHeader() {
             >
               <SheetTitle>Menu</SheetTitle>
               <nav className="flex flex-col space-y-4 mt-8 h-full">
-                {navigationLinks.map((link) => (
+                {onlyMobileNavigationLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
