@@ -6,17 +6,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import {
   PromptEngineeringModeConfig,
   promptEngineeringModes,
-  type PromptEngineeringMode,
 } from "@/types/prompt-engineering";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import { ScoreDisplay } from "@/components/score-display";
 import {
   analysisConfig,
   analysisOrder,
@@ -28,24 +19,15 @@ import type {
   AnalysisUpdateEvent,
   TokenUsage,
 } from "@/types/analysis";
-import { Loader2, Settings, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { getUserCredits } from "@/lib/services/client/userCredits.service";
 import { saveAnalysis as saveAnalysisToDb } from "@/lib/services/client/analysis.service";
 import useUserStore from "@/context/store";
-import AnalysisSection from "@/components/analysis-section";
 import AdvancedMode from "./components/advanced-mode";
 import ActionsNav from "./components/actions-nav";
 import AnalysisResults from "./components/analysis-results";
+import ContextSelector from "./components/context-selector";
+import { SignedIn } from "@clerk/nextjs";
 
 function getInitialAnalysisState(): AnalysisSections {
   const initialState = {} as Partial<AnalysisSections>;
@@ -77,11 +59,21 @@ const Analysis = () => {
   );
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
 
-  const [activeAnalyses, setActiveAnalyses] =
-    useState<Set<AnalysisSectionKey>>(allAnalysisKeys);
-  const [temporaryActiveAnalyses, setTemporaryActiveAnalyses] =
-    useState<Set<AnalysisSectionKey>>(allAnalysisKeys);
+  const [activeAnalyses, setActiveAnalyses] = useState<Set<AnalysisSectionKey>>(
+    new Set([
+      "suggestedPrompt",
+      "score",
+      "complexity",
+      "dependencies",
+      "features",
+      "nextSteps",
+    ])
+  );
+  const [temporaryActiveAnalyses, setTemporaryActiveAnalyses] = useState<
+    Set<AnalysisSectionKey>
+  >(new Set());
   const [isSettingsMenuOpen, setIsSettingsMenuOpen] = useState(false);
+  const [selectedContexts, setSelectedContexts] = useState("");
   const [promptEngineeringMode, setPromptEngineeringMode] =
     useState<PromptEngineeringModeConfig>(promptEngineeringModes[0]);
   const analysisSaved = useRef<boolean>(false);
@@ -190,8 +182,13 @@ const Analysis = () => {
       eventSourceRef.current = null;
     }
 
+    // Combine the prompt text with selected contexts if any
+    const promptWithContexts = selectedContexts
+      ? `${selectedContexts}\n\n${promptText}`
+      : promptText;
+
     const analysesQueryParam = Array.from(activeAnalyses).join(",");
-    const url = `/api/analyze?prompt=${encodeURIComponent(promptText)}&analyses=${analysesQueryParam}&promptMode=${promptEngineeringMode.id}`;
+    const url = `/api/analyze?prompt=${encodeURIComponent(promptWithContexts)}&analyses=${analysesQueryParam}&promptMode=${promptEngineeringMode.id}`;
 
     let preflight: Response;
     try {
@@ -452,6 +449,9 @@ const Analysis = () => {
             disabled={isAnalyzing}
             maxLength={10000}
           />
+          <SignedIn>
+            <ContextSelector onContextsChange={setSelectedContexts} />
+          </SignedIn>
 
           <ActionsNav
             isAnalyzing={isAnalyzing}

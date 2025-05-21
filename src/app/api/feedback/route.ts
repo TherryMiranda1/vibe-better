@@ -6,21 +6,14 @@ import {
 } from "@/lib/services/server/feedback.service";
 import { getCurrentUser } from "@/lib/auth";
 import { FeedbackCategory } from "@/types/feedback";
-
+import { v4 as uuid } from "uuid";
 
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentUser();
-    
+
     const body = await req.json();
-    const { 
-      rating, 
-      category, 
-      message, 
-      name, 
-      email, 
-      allowPublic 
-    } = body;
+    const { rating, category, message, name, email, allowPublic } = body;
 
     if (!rating || !category || !message || allowPublic === undefined) {
       return NextResponse.json(
@@ -39,14 +32,11 @@ export async function POST(req: NextRequest) {
 
     // Validate category
     if (!Object.values(FeedbackCategory).includes(category)) {
-      return NextResponse.json(
-        { error: "Invalid category" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid category" }, { status: 400 });
     }
 
     const feedback = await saveFeedback({
-      userId: user?.id,
+      userId: user?.id || uuid(),
       rating,
       category,
       message,
